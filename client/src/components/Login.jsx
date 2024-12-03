@@ -28,7 +28,7 @@ const Login = () => {
   }
 
   return (
-    <div id="wrapper">
+    <div id="wrapperLog">
       <h2>Log In</h2>
 
       <form onSubmit={submit} id='LogIn'>
