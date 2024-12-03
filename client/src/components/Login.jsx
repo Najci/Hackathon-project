@@ -8,7 +8,7 @@ const Login = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('/.netlify/functions/app/signup') 
+    fetch('/.netlify/functions/server/signup') 
         .then((data) => setMessage(data.message))
   }, []);
 
@@ -18,7 +18,7 @@ const Login = () => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('/.netlify/functions/app/signup', formData)
+    axios.post('/.netlify/functions/server/signup', formData)
     .then(function (response) {
       setMessage(response.data)
     })
