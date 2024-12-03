@@ -12,23 +12,26 @@ const User = require('./models/user-model')
 const Quiz = require('./models/quiz-model')
 const Question = require('./models/question-model')
 const Answer = require('./models/answer-model')
+const Assignment = require('./models/assignment-model');
+const { trusted } = require('mongoose');
 
 connectDB();
 
-const SESSION_SECRET = process.env.SESSION_SECRET;
-const CLIENT_URL = process.env.CLIENT_URL;
-
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: CLIENT_URL,
+    origin: "http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
   }));
 app.use(express.json());
 app.use(session({
-    secret: SESSION_SECRET,
+    secret: "my-super-secret-key",
     saveUninitialized: false,
     resave: false,  
-    cookie: { secure: false } 
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000,
+    },
 }));
 
 function createSession(data){
@@ -39,20 +42,28 @@ const isAuthenticated = (req, res, next) => {
     if (req.session.user) {
         return next(); // User is authenticated, proceed to the next middleware
     }
-    res.status(403).send('Unauthorized');
+    else
+    {
+        res.status(403).send('Unauthorized');
+    }
+    
 };
 
 const isTeacher = (req, res, next) => {
-    if (req.session.user && req.session.user.role === "teacher") {
-        return next();
-    res.status(403).send('Unauthorized');
-}};
+    
+    console.log(req.session.user.role);
+    
+};
 
 const isStudent = (req, res, next) => {
     if (req.session.user && req.session.user.role === "student") {
         return next();
+    }
+    else
+    {
     res.status(403).send('Unauthorized');
-}};
+    }
+};
 
 app.post('/signup', async (req, res) => {
     try {
@@ -96,13 +107,15 @@ app.post('/signup', async (req, res) => {
         const hash = await bcrypt.hash(data.password, saltRounds);
         data.password = hash;
         const { repeatPassword, ...dataToSave } = data;
+        req.session.user = createSession(data);
+        
+        
         let user = new User(dataToSave);
         user = await user.save();
         // Session starts
-        req.session.user = createSession(data);
+        
         res.status(201);
-        res.send("dobar");
-
+        res.json(req.session.user);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -114,7 +127,12 @@ app.get('/signup', (req, res) => {
     res.send("dobar")
 })
 
+app.get('/login', async(req, res) => {
+    //res.json({user: req.session.user})
+})
+
 app.post('/login', async (req, res) => {
+
     try {
         let data = req.body;
         const users = await User.find({ username: data.username })
@@ -138,12 +156,21 @@ app.post('/login', async (req, res) => {
                 return res.send("Incorrect password")
             }
             else{
+
+                /* req.session.isAuthenticated = true */
                 
                 // Session starts
                 req.session.user = createSession(users[0]);
-                
-                res.status(201);
-                res.send("dobar ti je logion")
+                console.log("unutra",req.session.user)
+                req.session.save((err) => {
+                    if (err) {
+                        res.status(500).send("Error saving session");
+                    } else {
+                        console.log("AJDE")
+                        res.status(201);
+                        res.json(req.session.user); // Session is now available
+                    }
+                });
             }
         })
         
@@ -158,7 +185,12 @@ app.post('/login', async (req, res) => {
 app.get('/student/dashboard', isStudent, (req,res)=>{
     res.json(req.session.user)
 })
-app.get('/teacher/dashboard', isTeacher, (req,res)=>{
+app.get('/teacher/dashboard', (req,res)=>{
+    if (!req.session.user || req.session.user.role !== "teacher") {
+        res.status(403).send("Unauthorized");
+    }
+
+    console.log("Get request")
     res.json(req.session.user)
 })
 
@@ -231,17 +263,33 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
     );
 })
 
-app.get('/assign', isTeacher, async (req, res)=>{
+app.get('/assign', async (req, res)=>{
     teacherUsername = req.session.user.username
-    teacher = await User.find({username: teacherUsername})
-    res.send(teacher)
-
+    teacher = (await User.find({username: teacherUsername}))[0]
+    quizzes = teacher.quizzes;
+    students = teacher.students;
+    
+    res.json({quizzes: quizzes, students:students})
 })
+
+app.post('/assign', async (req, res)=>{
+    teacherUsername = req.session.user.username
+    teacher = (await User.find({username: teacherUsername}))[0]
+    quizzes = teacher.quizzes;
+    students = teacher.students;
+
+    data = req.body;
     
-    
+    let assignment = new Assignment(data);
+    assignment = await assignment.save();
+    res.send(assignment);
+})
 
-
-
+app.get('/assignments/', isStudent, async (req, res)=>{
+    studentUsername = req.session.user.username;
+    studentId = (await User.find({username: studentUsername}))[0].id
+    assignments = await Assignment.find({students: { $in:  [studentId]}})
+})
 
 
   // NEMOJ ZABORAVIS DA OBRISES
