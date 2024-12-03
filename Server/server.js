@@ -217,10 +217,12 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
     }
     questions = req.body.questions;
     for (let question of questions){
+        let listOfAnswers = []
         for (let answer of question.answers){
             let savedAnswer = new Answer(answer);
             savedAnswer = await savedAnswer.save();
-            console.log(savedAnswer);
+            listOfAnswers.push(savedAnswer.id);
+            console.log(savedAnswer.id);
         }
     }
 
