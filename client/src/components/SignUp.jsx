@@ -9,7 +9,7 @@ const SignUp = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('https://warm-dango-3d4265.netlify.app/signup') 
+    fetch('/signup') 
         .then((response) => {
           if (response.ok){
 
@@ -27,7 +27,7 @@ const SignUp = () => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('https://warm-dango-3d4265.netlify.app/signup', formData)
+    axios.post('/signup', formData)
     .then(function (response) {
       setMessage(response.data)
       navigate('/login')

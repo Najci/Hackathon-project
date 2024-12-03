@@ -8,7 +8,7 @@ const Login = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/login') 
+    fetch('/login') 
         .then((data) => setMessage(data.message))
   }, []);
 
@@ -18,7 +18,7 @@ const Login = () => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('http://localhost:3000/login', formData)
+    axios.post('/login', formData)
     .then(function (response) {
       setMessage(response.data)
     })
