@@ -9,6 +9,9 @@ const serverless = require("serverless-http");
 const session = require('express-session')
 
 const User = require('./models/user-model')
+const Quiz = require('./models/quiz-model')
+const Question = require('./models/question-model')
+const Answer = require('./models/answer-model')
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -208,7 +211,19 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
     })
-    {error, value} = schema.validate(subject: subject)
+    const {error, value} = schema.validate({subject: subject});
+    if (error){
+        res.status(400).send("Invalid subject");
+    }
+    questions = req.body.questions;
+    for (let question of questions){
+        for (let answer of question.answers){
+            let savedAnswer = new Answer(answer);
+            savedAnswer = await savedAnswer.save();
+            console.log(savedAnswer);
+        }
+    }
+
 })
 
   
@@ -220,6 +235,6 @@ app.get('/deletedb', async (req, res)=>{
     console.log('suc')
 })
 app.listen(port, () => {
-  
-module.exports = app;  console.log("Listening on port 3000");
+   console.log("Listening on port", port);
 })
+module.exports = app;
