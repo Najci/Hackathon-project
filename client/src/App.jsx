@@ -19,9 +19,9 @@ const router = createBrowserRouter(
         <Footer />
       </>
     }>
-      <Route path='/signup' element={<SignUp />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path='https://warm-dango-3d4265.netlify.app//signup' element={<SignUp />} />
+      <Route path='https://warm-dango-3d4265.netlify.app//login' element={<Login />} />
+      <Route path='https://warm-dango-3d4265.netlify.app//dashboard' element={<Dashboard />} />
     </Route>
   )
 )
