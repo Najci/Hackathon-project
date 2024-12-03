@@ -29,6 +29,28 @@ function createSession(data){
     return {username: data.username, firstname: data.firstname, lastname: data.lastname, role: data.role, email: data.email}
 }
 
+const isAuthenticated = (req, res, next) => {
+    if (req.session.user) {
+        return next(); // User is authenticated, proceed to the next middleware
+    }
+    res.status(403).send('Unauthorized');
+};
+
+const isTeacher = (req, res, next) => {
+    if (req.session.user && req.session.user.role === "teacher") {
+        console.log("lala");
+        return next();
+    res.status(403).send('Unauthorized');
+}};
+
+const isStudent = (req, res, next) => {
+    if (req.session.user && req.session.user.role === "student") {
+        console.log("lala");
+        return next();
+    res.status(403).send('Unauthorized');
+}};
+
+
 connectDB();
 
 const port = 3000;
@@ -95,25 +117,6 @@ app.get('/signup', (req, res) => {
     console.log(req.session.user)
 })
 
-
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
-const isAuthenticated = (req, res, next) => {
-    if (req.session.user ) {
-        return next(); // User is authenticated, proceed to the next middleware
-    }
-    res.status(403).send('Unauthorized');
-};
-
-const isTeacher = (req, res, next) => {
-    if (req.session.user && req.session.user.role === "teacher") {
-        console.log("lala");
-        return next();
-    res.status(403).send('Unauthorized');
-}};
 app.post('/login', async (req, res) => {
     try {
         let data = req.body;
@@ -157,24 +160,46 @@ app.post('/login', async (req, res) => {
   });
 
 
-app.get('/dashboard', isAuthenticated, (req,res)=>{
+app.get('/student/dashboard', isStudent, (req,res)=>{
+    res.json(req.session.user)
+})
+app.get('/teacher/dashboard', isTeacher, (req,res)=>{
     res.json(req.session.user)
 })
 
+
 app.post('/addstudent', isTeacher, async (req, res)=>{ 
+
     teacherUsername = req.session.user.username;
+    teacherId = (await User.find({username: teacherUsername}))[0].id
+
+    const schema = Joi.object({
+        username: Joi.string().required()
+    })
+    const { error, value } = schema.validate({username: req.body.username})
+    if (error){
+        res.status(400);
+        return res.send(error.message);
+    }
     studentUsername = req.body.username;
     studentId = (await User.find({username: studentUsername, role: "student"}))[0].id
     console.log(studentId)
     console.log(teacherUsername)
-    const result = await User.updateOne(
+    await User.updateOne(
         { username: teacherUsername },
         { $push: { students: studentId } } 
     );
-    
+
+    await User.updateOne(
+        { username: studentUsername },
+        { $push: { teachers: teacherId } } 
+    );
     res.send("addstudent");
 
   })
+
+
+
 
   // NEMOJ ZABORAVIS DA OBRISES
 app.get('/deletedb', async (req, res)=>{

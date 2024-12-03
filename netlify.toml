@@ -1,0 +1,11 @@
+[build]
+  base = "client"           # The folder containing your React project (adjust if necessary)
+  publish = "client/dist"   # The folder where the built output will go (adjust if necessary)
+  command = "npm run build" # Command to build your project
+  functions = "netlify/functions" # Optional: for serverless functions if you're using them
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true

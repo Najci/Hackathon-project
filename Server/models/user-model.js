@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     role: {type: String, enum: ['teacher', 'student']},
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+    teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 }
 )
 const User = mongoose.model('User', userSchema);
