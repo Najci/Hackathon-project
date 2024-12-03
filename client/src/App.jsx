@@ -8,7 +8,6 @@ import Footer from './components/Footer'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 
-
 const router = createBrowserRouter(
   createRoutesFromChildren(
     <Route element={
