@@ -1,17 +1,17 @@
 const express = require('express');
 const app = express();
-const connectDB = require('./config/db');
+const connectDB = require('../config/db');
 const cors = require('cors');
 const Joi = require('joi');
 const bcrypt = require('bcrypt')
 const saltRounds = 1;
 const serverless = require("serverless-http");
 const session = require('express-session')
-
-const User = require('./models/user-model')
-const Quiz = require('./models/quiz-model')
-const Question = require('./models/question-model')
-const Answer = require('./models/answer-model')
+const router = express.Router();
+const User = require('../models/user-model')
+const Quiz = require('../models/quiz-model')
+const Question = require('../models/question-model')
+const Answer = require('../models/answer-model')
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -58,7 +58,7 @@ connectDB();
 
 const port = 3000;
 
-app.post('/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try {
         let data = req.body;
         // TO-DO: Add messages for errors
@@ -116,12 +116,12 @@ app.post('/signup', async (req, res) => {
   });
 
 
-app.get('/signup', (req, res) => {
+router.get('/signup', (req, res) => {
     console.log(req.session.user)
     res.send("dobar")
 })
 
-app.post('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         let data = req.body;
         const users = await User.find({ username: data.username })
@@ -164,15 +164,15 @@ app.post('/login', async (req, res) => {
   });
 
 
-app.get('/student/dashboard', isStudent, (req,res)=>{
+router.get('/student/dashboard', isStudent, (req,res)=>{
     res.json(req.session.user)
 })
-app.get('/teacher/dashboard', isTeacher, (req,res)=>{
+router.get('/teacher/dashboard', isTeacher, (req,res)=>{
     res.json(req.session.user)
 })
 
 
-app.post('/addstudent', isTeacher, async (req, res)=>{ 
+router.post('/addstudent', isTeacher, async (req, res)=>{ 
 
     teacherUsername = req.session.user.username;
     teacherId = (await User.find({username: teacherUsername}))[0].id
@@ -207,7 +207,7 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
 
   })
 
-app.post('/createquiz', isTeacher, async(req,res)=>{
+router.post('/createquiz', isTeacher, async(req,res)=>{
     data = req.body;
     
     subject = data.subject;
@@ -246,11 +246,13 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
 
 
   // NEMOJ ZABORAVIS DA OBRISES
-app.get('/deletedb', async (req, res)=>{
+router.get('/deletedb', async (req, res)=>{
     await User.deleteMany({});
     console.log('suc')
 })
 app.listen(port, () => {
    console.log("Listening on port", port);
 })
-module.exports = app;
+
+app.use('/.netlify/functions/server', router);
+module.exports.handler = serverless(app);
