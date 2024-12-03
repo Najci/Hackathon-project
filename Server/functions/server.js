@@ -243,6 +243,13 @@ router.post('/createquiz', isTeacher, async(req,res)=>{
 })
 
   
+/* router.get("/createassignment", isTeacher, async(req,res)=>{
+    teacherUsername = session.get.user.username
+    quizzes = User.find()
+}) */
+router.post("/createassignment", isTeacher, async(req,res)=>{
+
+})
 
 
   // NEMOJ ZABORAVIS DA OBRISES
@@ -250,9 +257,7 @@ router.get('/deletedb', async (req, res)=>{
     await User.deleteMany({});
     console.log('suc')
 })
-app.listen(port, () => {
-   console.log("Listening on port", port);
-})
+
 
 app.use('/.netlify/functions/server', router);
 module.exports.handler = serverless(app);
