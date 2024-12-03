@@ -233,8 +233,7 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
     }
     data.questions = listOfQuestions;
     let quiz = new Quiz(data);
-    
-
+    quiz = await quiz.save();
 })
 
   
