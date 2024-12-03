@@ -4,7 +4,7 @@ import '../css/Footer.css'
 const Footer = () => {
   return (
     <footer>
-      Foot
+      <p>EduSphinx</p>
     </footer>
   )
 }
