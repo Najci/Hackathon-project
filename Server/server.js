@@ -118,6 +118,7 @@ app.post('/signup', async (req, res) => {
 
 app.get('/signup', (req, res) => {
     console.log(req.session.user)
+    res.send("dobar")
 })
 
 app.post('/login', async (req, res) => {
@@ -208,7 +209,7 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
 
 app.post('/createquiz', isTeacher, async(req,res)=>{
     data = req.body;
-    name = data.name;
+    
     subject = data.subject;
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
@@ -231,9 +232,14 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
         savedQuestion = await savedQuestion.save();
         listOfQuestions.push(savedQuestion.id);
     }
+    teacherUsername = req.session.user.username
     data.questions = listOfQuestions;
     let quiz = new Quiz(data);
     quiz = await quiz.save();
+    await User.updateOne(
+        { username: teacherUsername },
+        { $push: { quizzes: quiz } } 
+    );
 })
 
   

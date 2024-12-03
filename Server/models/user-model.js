@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     role: {type: String, enum: ['teacher', 'student']},
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+    teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
 }
 )
 const User = mongoose.model('User', userSchema);
