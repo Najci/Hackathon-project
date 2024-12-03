@@ -216,15 +216,20 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
         res.status(400).send("Invalid subject");
     }
     questions = req.body.questions;
+    let listOfQuestions = [];
     for (let question of questions){
         let listOfAnswers = []
         for (let answer of question.answers){
             let savedAnswer = new Answer(answer);
             savedAnswer = await savedAnswer.save();
             listOfAnswers.push(savedAnswer.id);
-            console.log(savedAnswer.id);
         }
+        question.answers = listOfAnswers;
+        let savedQuestion = new Question(question);
+        savedQuestion = await savedQuestion.save();
+        listOfQuestions.push(savedQuestion.id);
     }
+    
 
 })
 
