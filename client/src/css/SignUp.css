@@ -1,0 +1,128 @@
+#wrapper{
+    width: 40%;
+    height: 75%;
+    margin: 0 auto;
+    border-radius: 4%;
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+}
+
+h2{
+    text-align: center;
+    color: white;
+    font-size: xx-large;
+    font-weight: 700;
+}
+
+#SignUp{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#SignUp *{
+    color: rgb(255, 255, 255);
+    margin-top: 5%;
+    gap: 6%;
+    justify-content: center;
+}
+
+#N_S{
+    margin: unset;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+#N_S input{
+    margin: unset;
+    width: 100%;
+    height: 50%;
+}
+
+#U_E{
+    margin: unset;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+#U_E input{
+    margin: unset;
+    width: 50%;
+    height: 50%;
+}
+
+#pass{
+    margin: unset;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+#pass input{
+    text-align: left;
+    margin: unset;
+    width: 100%;
+    height: 50%;
+}
+
+#S_T{
+    margin: unset;
+    display: flex;
+}
+
+#S_T input{
+    accent-color: rgb(255, 187, 0);
+    transition: 0.3s;
+}
+
+#S_T input:focus{
+    filter: drop-shadow( 0px 0px 5px rgb(255, 187, 0));
+    transition: 0.3s;
+}
+
+#SignLabel{
+    margin: 2%;
+}
+
+#Sign{
+    margin: 4% auto;
+    width: 60%;
+    background-color: rgb(28, 40, 83);
+    transition: 0.3s;
+    border: 1px solid rgb(66, 73, 177);
+    border-radius: 15px;
+    font-size: larger;
+    font-weight: 500;
+    padding: 5px;
+}
+
+#Sign:hover{
+    filter: drop-shadow( 0px 0px 5px rgb(255, 187, 0));
+    transition: 0.3s;
+}
+
+.inputField{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(31, 38, 63);
+    transition: 0.3s;
+    border: 1px solid rgb(66, 73, 177);
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.inputField:focus{
+    border: 1px solid rgb(255, 187, 0);
+    box-shadow: 0px 0px 15px rgb(255, 187, 0);
+    transition: 0.3s;
+}
+
+#Error{
+    color: red;
+}

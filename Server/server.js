@@ -1,0 +1,186 @@
+const express = require('express');
+const app = express();
+const connectDB = require('./config/db');
+const cors = require('cors');
+const Joi = require('joi');
+const bcrypt = require('bcrypt')
+const saltRounds = 1;
+const session = require('express-session')
+
+const User = require('./models/user-model')
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: 'http://localhost:5173', // React app's URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }));
+app.use(express.json());
+app.use(session({
+    secret: 'lala',
+    saveUninitialized: false,
+    resave: false,  
+    cookie: { secure: false } 
+
+}));
+
+
+function createSession(data){
+    return {username: data.username, firstname: data.firstname, lastname: data.lastname, role: data.role, email: data.email}
+}
+
+connectDB();
+
+const port = 3000;
+
+app.post('/signup', async (req, res) => {
+    try {
+        let data = req.body;
+        // TO-DO: Add messages for errors
+        const schema = Joi.object({
+            firstname: Joi.string()
+                    .alphanum()
+                    .required(),
+            lastname: Joi.string()
+                    .alphanum()
+                    .required(),
+            username: Joi.string()
+                .alphanum()
+                .min(3)
+                .max(30)
+                .required(),
+            email: Joi.string()
+                .email({ minDomainSegments: 2}),
+            password: Joi.string()
+                .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+            repeatPassword: Joi.ref('password'),
+            role: Joi.string().valid('teacher', 'student').required()
+        })
+        
+        const { error, value } = schema.validate({ firstname: data.firstname, lastname: data.lastname, username: data.username, email: data.email, password: data.password, repeatPassword: data.repeatPassword, role: data.role});
+        if (error){
+            res.status(400)
+            return res.send(error.message)
+        }
+        let users = await User.find({ username: data.username })
+        if (users.length){
+            res.status(400)
+            return res.send("Username taken");
+        }
+        users = await User.find({ email: data.email })
+        if (users.length){
+            res.status(400)
+            return res.send("Email taken");
+        }
+        console.log("syntactic sugar")
+        const hash = await bcrypt.hash(data.password, saltRounds);
+        data.password = hash;
+        const { repeatPassword, ...dataToSave } = data;
+        let user = new User(dataToSave);
+        user = await user.save();
+        // Session starts
+        req.session.user = createSession(data);
+        console.log("Entry successful")
+        res.status(201);
+        res.send("dobar");
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+  });
+
+
+app.get('/signup', (req, res) => {
+    console.log(req.session.user)
+})
+
+
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+const isAuthenticated = (req, res, next) => {
+    if (req.session.user ) {
+        return next(); // User is authenticated, proceed to the next middleware
+    }
+    res.status(403).send('Unauthorized');
+};
+
+const isTeacher = (req, res, next) => {
+    if (req.session.user && req.session.user.role === "teacher") {
+        console.log("lala");
+        return next();
+    res.status(403).send('Unauthorized');
+}};
+app.post('/login', async (req, res) => {
+    try {
+        let data = req.body;
+        const users = await User.find({ username: data.username })
+        
+        if (!users.length){
+            res.status(400)
+            return res.send("Username not found");
+        }
+        const correctPassword = users[0].password;
+        
+
+        bcrypt.compare(data.password, correctPassword, (err, isMatch) =>{
+            if (err){
+                res.status(500)
+                return res.send(err);
+            }
+
+            if (!isMatch){
+                
+                res.status(400)
+                return res.send("Incorrect password")
+            }
+            else{
+                
+                // Session starts
+                console.log(users[0])
+                req.session.user = createSession(users[0]);
+                console.log(req.session.user);
+                
+                res.status(201);
+                res.send("dobar ti je logion")
+            }
+        })
+        
+        
+    } catch (error) {
+        res.status(500);
+        res.json({ message: error.message });
+    }
+  });
+
+
+app.get('/dashboard', isAuthenticated, (req,res)=>{
+    res.json(req.session.user)
+})
+
+app.post('/addstudent', isTeacher, async (req, res)=>{ 
+    teacherUsername = req.session.user.username;
+    studentUsername = req.body.username;
+    studentId = (await User.find({username: studentUsername, role: "student"}))[0].id
+    console.log(studentId)
+    console.log(teacherUsername)
+    const result = await User.updateOne(
+        { username: teacherUsername },
+        { $push: { students: studentId } } 
+    );
+    
+    res.send("addstudent");
+
+  })
+
+  // NEMOJ ZABORAVIS DA OBRISES
+app.get('/deletedb', async (req, res)=>{
+    await User.deleteMany({});
+    console.log('suc')
+})
+app.listen(port, () => {
+    console.log("Listening on port 3000");
+})
