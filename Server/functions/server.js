@@ -243,7 +243,10 @@ router.post('/createquiz', isTeacher, async(req,res)=>{
 })
 
   
-
+/* router.get("/createassignment", isTeacher, async(req,res)=>{
+    teacherUsername = session.get.user.username
+    quizzes = User.find()
+}) */
 router.post("/createassignment", isTeacher, async(req,res)=>{
 
 })
