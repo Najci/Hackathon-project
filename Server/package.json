@@ -5,6 +5,10 @@
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "joi": "^17.13.3",
-    "mongoose": "^8.8.3"
+    "mongoose": "^8.8.3",
+    "serverless-http": "^3.2.0"
+  },
+  "scripts": {
+    "build": "netlify deploy --prod"
   }
 }

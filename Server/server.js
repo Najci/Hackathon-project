@@ -5,14 +5,14 @@ const cors = require('cors');
 const Joi = require('joi');
 const bcrypt = require('bcrypt')
 const saltRounds = 1;
+const serverless = require("serverless-http");
 const session = require('express-session')
 
 const User = require('./models/user-model')
 
-
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'http://localhost:5173', // React app's URL
+    origin: 'https://edusphinx.netlify.app/',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }));
 app.use(express.json());
@@ -203,7 +203,15 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
 
   })
 
+app.post('/createquiz', isTeacher, async(req,res)=>{
+    subject = req.body.subject;
+    const schema = Joi.object({
+        subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
+    })
+    {error, value} = schema.validate(subject: subject)
+})
 
+  
 
 
   // NEMOJ ZABORAVIS DA OBRISES
@@ -212,5 +220,6 @@ app.get('/deletedb', async (req, res)=>{
     console.log('suc')
 })
 app.listen(port, () => {
-    console.log("Listening on port 3000");
+  
+module.exports = app;  console.log("Listening on port 3000");
 })
