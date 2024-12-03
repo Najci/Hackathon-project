@@ -185,15 +185,20 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
     studentId = (await User.find({username: studentUsername, role: "student"}))[0].id
     console.log(studentId)
     console.log(teacherUsername)
-    await User.updateOne(
-        { username: teacherUsername },
-        { $push: { students: studentId } } 
-    );
-
-    await User.updateOne(
-        { username: studentUsername },
-        { $push: { teachers: teacherId } } 
-    );
+    try{
+        await User.updateOne(
+            { username: teacherUsername },
+            { $push: { students: studentId } } 
+        );
+        await User.updateOne(
+            { username: studentUsername },
+            { $push: { teachers: teacherId } } 
+        );
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Unable to add student");
+    }   
     res.send("addstudent");
 
   })
