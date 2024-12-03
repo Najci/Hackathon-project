@@ -207,7 +207,9 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
   })
 
 app.post('/createquiz', isTeacher, async(req,res)=>{
-    subject = req.body.subject;
+    data = req.body;
+    name = data.name;
+    subject = data.subject;
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
     })
@@ -229,6 +231,8 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
         savedQuestion = await savedQuestion.save();
         listOfQuestions.push(savedQuestion.id);
     }
+    data.questions = listOfQuestions;
+    let quiz = new Quiz(data);
     
 
 })
