@@ -1,11 +1,13 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const connectDB = require('./config/db');
 const cors = require('cors');
 const Joi = require('joi');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const saltRounds = 1;
 const session = require('express-session')
+
 const User = require('./models/user-model')
 const Quiz = require('./models/quiz-model')
 const Question = require('./models/question-model')
@@ -13,18 +15,20 @@ const Answer = require('./models/answer-model')
 
 connectDB();
 
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const CLIENT_URL = process.env.CLIENT_URL;
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'localhost:5173',
+    origin: CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }));
 app.use(express.json());
 app.use(session({
-    secret: 'lala',
+    secret: SESSION_SECRET,
     saveUninitialized: false,
     resave: false,  
     cookie: { secure: false } 
-
 }));
 
 function createSession(data){
@@ -40,14 +44,12 @@ const isAuthenticated = (req, res, next) => {
 
 const isTeacher = (req, res, next) => {
     if (req.session.user && req.session.user.role === "teacher") {
-        console.log("lala");
         return next();
     res.status(403).send('Unauthorized');
 }};
 
 const isStudent = (req, res, next) => {
     if (req.session.user && req.session.user.role === "student") {
-        console.log("lala");
         return next();
     res.status(403).send('Unauthorized');
 }};
@@ -91,7 +93,6 @@ app.post('/signup', async (req, res) => {
             res.status(400)
             return res.send("Email taken");
         }
-        console.log("syntactic sugar")
         const hash = await bcrypt.hash(data.password, saltRounds);
         data.password = hash;
         const { repeatPassword, ...dataToSave } = data;
@@ -99,7 +100,6 @@ app.post('/signup', async (req, res) => {
         user = await user.save();
         // Session starts
         req.session.user = createSession(data);
-        console.log("Entry successful")
         res.status(201);
         res.send("dobar");
 
@@ -111,7 +111,6 @@ app.post('/signup', async (req, res) => {
 
 
 app.get('/signup', (req, res) => {
-    console.log(req.session.user)
     res.send("dobar")
 })
 
@@ -141,9 +140,7 @@ app.post('/login', async (req, res) => {
             else{
                 
                 // Session starts
-                console.log(users[0])
                 req.session.user = createSession(users[0]);
-                console.log(req.session.user);
                 
                 res.status(201);
                 res.send("dobar ti je logion")
@@ -181,8 +178,6 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
     }
     studentUsername = req.body.username;
     studentId = (await User.find({username: studentUsername, role: "student"}))[0].id
-    console.log(studentId)
-    console.log(teacherUsername)
     try{
         await User.updateOne(
             { username: teacherUsername },
@@ -236,19 +231,16 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
     );
 })
 
-  
-app.get("/assign", isTeacher, async(req,res)=>{
+app.get('/assign', isTeacher, async (req, res)=>{
     teacherUsername = req.session.user.username
-    teacher = await (User.find({username: teacherUsername}))[0]
-    console.log(teacher);
-    /* quizzes = teacher.quizzes
-    
-    students = teacher.students;
-    res.json({quizzes: quizzes, students: students})  */
+    teacher = await User.find({username: teacherUsername})
+    res.send(teacher)
+
+})
     
     
 
-})
+
 
 
 
