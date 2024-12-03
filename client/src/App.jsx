@@ -1,6 +1,5 @@
-import { createBrowserRouter, createRoutesFromChildren, Route, RouterProvider } from 'react-router-dom'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react'
+import { createBrowserRouter, createRoutesFromChildren, Route, RouterProvider } from 'react-router-dom';
 import '../src/css/App.css'
 import Main from './components/Main'
 import Header from './components/HeaderStudent'
