@@ -1,21 +1,19 @@
 const express = require('express');
 const app = express();
-const connectDB = require('./config/db');
+const connectDB = require('./db');
 const cors = require('cors');
 const Joi = require('joi');
 const bcrypt = require('bcrypt')
 const saltRounds = 1;
-const serverless = require("serverless-http");
 const session = require('express-session')
-
-const User = require('./models/user-model')
-const Quiz = require('./models/quiz-model')
-const Question = require('./models/question-model')
-const Answer = require('./models/answer-model')
+const User = require('./user-model')
+const Quiz = require('./quiz-model')
+const Question = require('./question-model')
+const Answer = require('./answer-model')
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'https://edusphinx.netlify.app/',
+    origin: 'https://edusphinx.netlify.app/.netlify/functions/server',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }));
 app.use(express.json());
@@ -118,6 +116,7 @@ app.post('/signup', async (req, res) => {
 
 app.get('/signup', (req, res) => {
     console.log(req.session.user)
+    res.send("dobar")
 })
 
 app.post('/login', async (req, res) => {
@@ -208,7 +207,7 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
 
 app.post('/createquiz', isTeacher, async(req,res)=>{
     data = req.body;
-    name = data.name;
+    
     subject = data.subject;
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
@@ -231,22 +230,32 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
         savedQuestion = await savedQuestion.save();
         listOfQuestions.push(savedQuestion.id);
     }
+    teacherUsername = req.session.user.username
     data.questions = listOfQuestions;
     let quiz = new Quiz(data);
     quiz = await quiz.save();
-
-    // TO-DO link teacher to their quiz
+    await User.updateOne(
+        { username: teacherUsername },
+        { $push: { quizzes: quiz } } 
+    );
 })
 
   
+app.get("/createassignment", isTeacher, async(req,res)=>{
+    teacherUsername = session.get.user.username
+    quizzes = User.find()
+})
+app.post("/createassignment", isTeacher, async(req,res)=>{
+
+})
 
 
   // NEMOJ ZABORAVIS DA OBRISES
-app.get('/deletedb', async (req, res)=>{
+>app.get('/deletedb', async (req, res)=>{
     await User.deleteMany({});
     console.log('suc')
 })
+
 app.listen(port, () => {
-   console.log("Listening on port", port);
+    console.log("Listening to port: " + port)
 })
-module.exports = app;
