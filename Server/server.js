@@ -1,19 +1,21 @@
 const express = require('express');
 const app = express();
-const connectDB = require('./db');
+const connectDB = require('./config/db');
 const cors = require('cors');
 const Joi = require('joi');
 const bcrypt = require('bcrypt')
 const saltRounds = 1;
 const session = require('express-session')
-const User = require('./user-model')
-const Quiz = require('./quiz-model')
-const Question = require('./question-model')
-const Answer = require('./answer-model')
+const User = require('./models/user-model')
+const Quiz = require('./models/quiz-model')
+const Question = require('./models/question-model')
+const Answer = require('./models/answer-model')
+
+connectDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'https://edusphinx.netlify.app/.netlify/functions/server',
+    origin: 'localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }));
 app.use(express.json());
@@ -24,7 +26,6 @@ app.use(session({
     cookie: { secure: false } 
 
 }));
-
 
 function createSession(data){
     return {username: data.username, firstname: data.firstname, lastname: data.lastname, role: data.role, email: data.email}
@@ -50,11 +51,6 @@ const isStudent = (req, res, next) => {
         return next();
     res.status(403).send('Unauthorized');
 }};
-
-
-connectDB();
-
-const port = 3000;
 
 app.post('/signup', async (req, res) => {
     try {
@@ -241,21 +237,26 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
 })
 
   
-app.get("/createassignment", isTeacher, async(req,res)=>{
-    teacherUsername = session.get.user.username
-    quizzes = User.find()
-})
-app.post("/createassignment", isTeacher, async(req,res)=>{
+app.get("/assign", isTeacher, async(req,res)=>{
+    teacherUsername = req.session.user.username
+    teacher = await (User.find({username: teacherUsername}))[0]
+    console.log(teacher);
+    /* quizzes = teacher.quizzes
+    
+    students = teacher.students;
+    res.json({quizzes: quizzes, students: students})  */
+    
+    
 
 })
+
 
 
   // NEMOJ ZABORAVIS DA OBRISES
->app.get('/deletedb', async (req, res)=>{
+app.get('/deletedb', async (req, res)=>{
     await User.deleteMany({});
     console.log('suc')
 })
 
-app.listen(port, () => {
-    console.log("Listening to port: " + port)
-})
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}`))
