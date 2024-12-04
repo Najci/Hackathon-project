@@ -17,22 +17,15 @@ import { ViewStudents } from './components/ViewStudents';
 import AddAssignment from './components/AddAssignment';
 
 
-const ProtectedRoute = ({ element, user, username }) => {
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  if (username){
-    const requiredRole = element.props.username;
-    const hasAccess = user.username === requiredRole;
-
-    return hasAccess ? element : <Navigate to="/login" />;
-  }
-
-  const requiredRole = element.props.id;
-  const hasAccess = user.role === requiredRole;
-
+const ProtectedRoute = ({ element, user, requiredRole, requiredUsername }) => {
+  if (!user) return <Navigate to="/login" />;
+  
+  const hasAccess = requiredRole 
+    ? user.role === requiredRole 
+    : requiredUsername 
+      ? user.username === requiredUsername 
+      : true;
+  
   return hasAccess ? element : <Navigate to="/login" />;
 };
 
@@ -65,7 +58,7 @@ function App() {
         <Route path="/student/dashboard" element={<ProtectedRoute element={<StudentDashboard user={cookie.user} id='student'/>} user={cookie.user} />} />
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
         <Route path='/student/dashboard/quiz' element={<ProtectedRoute element={<Quiz id='student' />} user={cookie.user} />} />
-        <Route path={'/teacher/viewstudents/' + cookie.user.username} element={<ProtectedRoute element={<ViewStudents cookie={cookie} id='teacher' username={cookie.user.username} />} user={cookie.user} />} />
+        <Route path={`/teacher/viewstudents/${cookie.user?.username}`} element={<ProtectedRoute element={<ViewStudents cookie={cookie} id="teacher" username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path='/teacher/addassignment' element={<ProtectedRoute element={<AddAssignment cookie={cookie} id='teacher' />} user={cookie.user}/>} />
       </Route>
     )

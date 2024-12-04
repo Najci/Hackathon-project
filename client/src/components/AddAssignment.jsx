@@ -5,9 +5,15 @@ const AddAssignment = () => {
   return (
     <div id='mainAddAssigment'>
 
-        <div id='AssignmentSubMain'>
+        <div id='AssignmentHeader'>
 
         </div>
+
+        <div id='AssignmentMain'>
+
+        </div>
+
+
         
     </div>
   )
