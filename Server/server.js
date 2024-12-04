@@ -179,25 +179,36 @@ app.post('/login', async (req, res) => {
 app.get('/student/dashboard', (req,res)=>{
     res.json(req.session.user);
 })
-app.get('/teacher/dashboard', (req,res)=>{
+app.get('/teacher/dashboard', async (req,res)=>{
     res.json(req.session.user);
+
 })
 
-app.post('/teacher/dashboard/addstudent', async (req, res)=>{ 
+app.post('/teacher/addstudent', async (req, res)=>{ 
+// stavi da ne mogu dva ista studenta / teachera
+    console.log(req.body);
 
-    teacherUsername = req.session.user.username;
+    if (!req.body.cookie){
+        return res.send("not authorised")
+    }
+    teacherUsername = req.body.cookie.user.user.username;
     teacherId = (await User.find({username: teacherUsername}))[0].id
-
     const schema = Joi.object({
         username: Joi.string().required()
     })
-    const { error, value } = schema.validate({username: req.body.username})
+    const { error, value } = schema.validate({username: req.body.data.username})
     if (error){
         res.status(400);
         return res.send(error.message);
     }
-    studentUsername = req.body.username;
-    studentId = (await User.find({username: studentUsername, role: "student"}))[0].id
+    studentUsername = req.body.data.username;
+    student = await User.findOne({username: studentUsername, role: "student"})
+    console.log(student);
+    if (!student){
+        res.status(400)
+        return res.send("Cannot add a teacher.")
+    }
+    studentId = student.id;
     try{
         await User.updateOne(
             { username: teacherUsername },
@@ -212,9 +223,50 @@ app.post('/teacher/dashboard/addstudent', async (req, res)=>{
         console.error(err);
         res.status(500).send("Unable to add student");
     }   
-    res.send("addstudent");
+    res.json(student);
 
   })
+
+  /* app.post('/teacher/addstudent', async (req, res)=>{ 
+    // stavi da ne mogu dva ista studenta / teachera
+        console.log(req.body);
+    
+        if (!req.body.cookie){
+            return res.send("not authorised")
+        }
+        teacherUsername = req.body.cookie.user.user.username;
+        teacherId = (await User.find({username: teacherUsername}))[0].id
+        const schema = Joi.object({
+            username: Joi.string().required()
+        })
+        const { error, value } = schema.validate({username: req.body.data.username})
+        if (error){
+            res.status(400);
+            return res.send(error.message);
+        }
+        studentUsername = req.body.data.username;
+        student = await User.findOne({username: studentUsername, role: "student"})
+        if (!student){
+            return res.send("ne moze")
+        }
+        studentId = student.id;
+        try{
+            await User.updateOne(
+                { username: teacherUsername },
+                { $push: { students: studentId } } 
+            );
+            await User.updateOne(
+                { username: studentUsername },
+                { $push: { teachers: teacherId } } 
+            );
+        }
+        catch (err){
+            console.error(err);
+            res.status(500).send("Unable to add student");
+        }   
+        res.json(student);
+    
+      }) */
 
 app.post('/createquiz', async(req,res)=>{
     // postuje se select sa jednim od 10 mogucih predmeta
