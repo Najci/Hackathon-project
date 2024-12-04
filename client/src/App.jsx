@@ -17,17 +17,25 @@ import { ViewStudents } from './components/ViewStudents';
 import AddAssignment from './components/AddAssignment';
 
 
-const ProtectedRoute = ({ element, user, requiredRole, requiredUsername }) => {
-  if (!user) return <Navigate to="/login" />;
-  
-  const hasAccess = requiredRole 
-    ? user.role === requiredRole 
-    : requiredUsername 
-      ? user.username === requiredUsername 
-      : true;
-  
+
+const ProtectedRoute = ({ element, user, username }) => {
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  if (username){
+    const requiredRole = element.props.username;
+    const hasAccess = user.username === requiredRole;
+
+    return hasAccess ? element : <Navigate to="/login" />;
+  }
+
+  const requiredRole = element.props.id;
+  const hasAccess = user.role === requiredRole;
+
   return hasAccess ? element : <Navigate to="/login" />;
 };
+
 
 function App() {
   const [cookie, setCookie] = useCookies(['user']);
