@@ -38,7 +38,7 @@ function createSession(data){
     return {username: data.username, firstname: data.firstname, lastname: data.lastname, role: data.role, email: data.email}
 }
 
-const isAuthenticated = (req, res, next) => {
+/* const isAuthenticated = (req, res, next) => {
     if (req.session.user) {
         return next(); // User is authenticated, proceed to the next middleware
     }
@@ -47,7 +47,7 @@ const isAuthenticated = (req, res, next) => {
         res.status(403).send('Unauthorized');
     }
     
-};
+}; */
 
 const isTeacher = (req, res, next) => {
     
@@ -55,7 +55,7 @@ const isTeacher = (req, res, next) => {
     
 };
 
-const isStudent = (req, res, next) => {
+/* const isStudent = (req, res, next) => {
     if (req.session.user && req.session.user.role === "student") {
         return next();
     }
@@ -63,7 +63,7 @@ const isStudent = (req, res, next) => {
     {
     res.status(403).send('Unauthorized');
     }
-};
+}; */
 
 app.post('/signup', async (req, res) => {
     try {
@@ -127,10 +127,6 @@ app.get('/signup', (req, res) => {
     res.send("dobar")
 })
 
-app.get('/login', async(req, res) => {
-    //res.json({user: req.session.user})
-})
-
 app.post('/login', async (req, res) => {
 
     try {
@@ -156,8 +152,6 @@ app.post('/login', async (req, res) => {
                 return res.send("Incorrect password")
             }
             else{
-
-                /* req.session.isAuthenticated = true */
                 
                 // Session starts
                 req.session.user = createSession(users[0]);
@@ -182,20 +176,15 @@ app.post('/login', async (req, res) => {
   });
 
 
-app.get('/student/dashboard', isStudent, (req,res)=>{
-    res.json(req.session.user)
+app.get('/student/dashboard', (req,res)=>{
+    res.json(req.session.user);
 })
 app.get('/teacher/dashboard', (req,res)=>{
-    if (!req.session.user || req.session.user.role !== "teacher") {
-        res.status(403).send("Unauthorized");
-    }
-
-    console.log("Get request")
-    res.json(req.session.user)
+    res.json(req.session.user);
 })
 
 
-app.post('/addstudent', isTeacher, async (req, res)=>{ 
+app.post('/teacher/dashboard/addstudent', async (req, res)=>{ 
 
     teacherUsername = req.session.user.username;
     teacherId = (await User.find({username: teacherUsername}))[0].id
@@ -228,7 +217,9 @@ app.post('/addstudent', isTeacher, async (req, res)=>{
 
   })
 
-app.post('/createquiz', isTeacher, async(req,res)=>{
+app.post('/createquiz', async(req,res)=>{
+    // postuje se select sa jednim od 10 mogucih predmeta
+    // postuje se list of questions, svaki question ima svoj tekst i list of 4 answers, svaki answer u sebi ima answerText i isCorrect boolean.
     data = req.body;
     
     subject = data.subject;
@@ -264,6 +255,7 @@ app.post('/createquiz', isTeacher, async(req,res)=>{
 })
 
 app.get('/assign', async (req, res)=>{
+    // pokazuje sve quizzes i students jednog teachera
     teacherUsername = req.session.user.username
     teacher = (await User.find({username: teacherUsername}))[0]
     quizzes = teacher.quizzes;
@@ -273,8 +265,11 @@ app.get('/assign', async (req, res)=>{
 })
 
 app.post('/assign', async (req, res)=>{
+
+    // postuje se select quiza, checkbox studenata, duedate
     teacherUsername = req.session.user.username
     teacher = (await User.find({username: teacherUsername}))[0]
+    // TODO: error-checking
     quizzes = teacher.quizzes;
     students = teacher.students;
 
@@ -285,10 +280,21 @@ app.post('/assign', async (req, res)=>{
     res.send(assignment);
 })
 
-app.get('/assignments/', isStudent, async (req, res)=>{
+app.get('/assignments/', async (req, res)=>{
+    // trebalo bi da radi, proveri kad max napravi frontend
+    // ako ne radi srecno
+
     studentUsername = req.session.user.username;
     studentId = (await User.find({username: studentUsername}))[0].id
     assignments = await Assignment.find({students: { $in:  [studentId]}})
+    for (let assignment of assignments){
+        let quiz = (await Quiz.find({id: assignment.quiz}))[0].id
+        let teacher = (await User.find({quizzes: { $in:  [quiz]}}))[0]
+        assignment.teacherFirstName = teacher.firstname;
+        assignment.teacherLastName = teacher.lastname;
+    }
+    console.log(assignments);
+    res.json(assignments);
 })
 
 
