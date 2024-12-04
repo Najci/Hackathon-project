@@ -8,6 +8,15 @@ const bcrypt = require('bcryptjs')
 const saltRounds = 1;
 const session = require('express-session')
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI("AIzaSyCcnoqG6EFuJfRyBOGzxlGKM1lM8AfWe5A");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+
+
+
+
+
 const User = require('./models/user-model')
 const Quiz = require('./models/quiz-model')
 const Question = require('./models/question-model')
@@ -184,6 +193,14 @@ app.get('/teacher/dashboard', async (req,res)=>{
 
 })
 
+app.post('/teacher/createquiz/ai', async(req,res)=>{
+    topic = req.body.data.topic;
+    const prompt = "You are a question and answer generator for teachers creating an online quiz. Send in JSON format 5 questions, each with 4 possible answers, one of which is correct. Omit the ```json bits. The topic of the quiz is "+topic;
+    const result = await model.generateContent(prompt);
+    
+    console.log(result.response.text());
+})
+
 app.post('/teacher/search', async (req, res)=>{ 
 // stavi da ne mogu dva ista studenta / teachera
     console.log(req.body);
@@ -293,6 +310,7 @@ app.get('/teacher/viewstudents/:username', async(req,res)=>{
     res.status(200);
     res.json(students);
 })
+
 app.post('/teacher/removestudent/', async(req,res)=>{
     teacherUsername = req.body.cookie.user.username;
     studentId = req.body.data;
