@@ -35,8 +35,8 @@ const AddStudent = ({cookie}) => {
             setMessage('')
         })
         .catch(function (error) {
-            console.log(error.response)
-            setMessage(error.response)
+            console.log(error.message)
+            setMessage('Student not found')
         });
     }
 

@@ -1,0 +1,18 @@
+#mainAddAssigment{
+    margin: 0 auto;
+    margin-top: 5%;
+    width: 70%;
+    height: 100vh;
+    padding: 5px;
+}
+
+#AssignmentSubMain{
+    padding: 5%;
+    margin: 0 auto;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    height: 60vh;
+    width: 70%;
+}

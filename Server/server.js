@@ -1,4 +1,4 @@
-require('dotenv').config()
+
 const express = require('express');
 const app = express();
 const connectDB = require('./config/db');
@@ -162,7 +162,7 @@ app.post('/login', async (req, res) => {
                     } else {
                         console.log("AJDE")
                         res.status(201);
-                        res.json(req.session); // Session is now available
+                        res.json(req.session); 
                     }
                 });
             }
@@ -202,11 +202,10 @@ app.post('/teacher/search', async (req, res)=>{
         return res.send(error.message);
     }
     studentUsername = req.body.data.username;
-    student = await User.findOne({username: studentUsername, role: "student"})
     
+    student = await User.findOne({username: studentUsername, role: "student"})
     if (!student){
-        res.status(400)
-        return res.send("Cannot add a teacher.")
+        return res.status(400).send("Cannot add a teacher.")
     }
     studentId = student.id;
 
@@ -293,6 +292,9 @@ app.get('/teacher/viewstudents/:username', async(req,res)=>{
     students = (await User.find({_id: studentID})) 
     res.status(200);
     res.json(students);
+})
+app.delete('/teacher/removestudent/', async(req,res)=>{
+    console.log(req.body);
 })
 
 
