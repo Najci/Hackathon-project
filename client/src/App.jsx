@@ -11,6 +11,7 @@ import AddStudent from './components/AddStudent';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import MainHeader from './components/Headers/MainHeader';
 import AboutUs from './components/AboutUs';
+import axios from 'axios';
 
 
 function ProtectedRoute({ element, user }) {
@@ -45,7 +46,8 @@ function App() {
         <Route path="/login" element={<Login CreateCookie={handleLogin} user={cookie.user} />} />
         <Route path="/teacher/dashboard" element={<ProtectedRoute element={<TeacherDashboard user={cookie.user} />} user={cookie.user} />} />
         <Route path="/student/dashboard" element={<ProtectedRoute element={<StudentDashboard user={cookie.user} />} user={cookie.user} />} />
-        <Route path="/teacher/dashboard/addstudents" element={<ProtectedRoute element={<AddStudent />} user={cookie.user} />} />
+        <Route path="/teacher/dashboard/addstudents" element={<ProtectedRoute element={<AddStudent user={cookie} />} user={cookie.user} />} />
+        <Route path='/student/dashboard/quiz' />
       </Route>
     )
   );

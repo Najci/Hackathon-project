@@ -42,18 +42,13 @@ const TeacherDashboard = ({user}) => {
             <img src={proficon} id="proficon"/>
             <p>Profile</p>
           </div>
-    
-          <div className='box' id="quiz" >
-            <img src={quizicon} id="quizicon"/>
-            <p>Quiz</p>
-          </div>
 
-            <div className='box' id="add" >
-              <Link to='/teacher/dashboard/addstudents' style={{textDecoration: 'none'}}>
-                <img src={addicon} id="addicon"/>
-                <p>Add Student</p>
-              </Link>
-            </div>
+          <div className='box' id="add" >
+            <Link to='/teacher/dashboard/addstudents' style={{textDecoration: 'none'}}>
+              <img src={addicon} id="addicon"/>
+              <p>Add Student</p>
+            </Link>
+          </div>
     
 
           <div className='box' id="view" >

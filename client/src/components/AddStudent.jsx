@@ -3,7 +3,27 @@ import '../css/AddStudent.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const AddStudent = () => {
+const frame = document.getElementById('userFrame')
+
+class newItem{
+    constructor(data){
+        const field = document.createElement('div');
+        field.setAttribute('id', 'feild')
+          
+        const username = document.createElement('span');
+        username.innerText = data.username;
+        field.appendChild(username);
+
+        const button = document.createElement('button');
+        button.innerText = "Click Me"; 
+        
+        field.appendChild(button);
+
+        frame.appendChild(field)
+    }
+}
+
+const AddStudent = (cookie) => {
 
     const [message, setMessage] = useState('');
     const navigate = useNavigate()
@@ -14,12 +34,13 @@ const AddStudent = () => {
         const form = new FormData(e.target); 
         const formData = Object.fromEntries(form.entries())
     
-        axios.post('http://localhost:3000/teacher/dashboard/addstudent', formData)
+        axios.post('http://localhost:3000/teacher/addstudent', {data : formData, cookie : cookie})
         .then(function (response) {
-            
+            const NewElement = new newItem(response.data)
         })
         .catch(function (error) {
-          setMessage(error.response.data)
+            console.log(error.response)
+            setMessage(error.response)
         });
     }
 

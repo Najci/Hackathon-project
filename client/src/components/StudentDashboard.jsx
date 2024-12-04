@@ -51,7 +51,7 @@ const StudentDashboard = ({user}) => {
     
           <div className='box' id="settings">
             <img src={assignicon} id="wheel"/>
-            <p>Add Asignments</p>
+            <p>View Assignments</p>
           </div>
 
         </div>
