@@ -7,7 +7,7 @@ export const ViewStudents = ({cookie}) => {
     const [studentData, setStudentData] = useState([]);
 
     const remove = (userID, element) =>{
-        axios.delete('http://localhost:3000/teacher/removestudent/', {data: userID, cookie: cookie})
+        axios.post('http://localhost:3000/teacher/removestudent/', {data: userID, cookie: cookie})
         .then(function(response) {            
             element.remove()
             console.log(response)

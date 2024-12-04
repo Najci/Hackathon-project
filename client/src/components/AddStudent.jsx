@@ -16,7 +16,7 @@ const AddStudent = ({cookie}) => {
         .then(function (response){
             console.log(response.data)
             setStudentData(null)
-            setMessage('Student has been added')
+            setMessage('Student added')
         })
         .catch(function(error) {
             setMessage(error.message)

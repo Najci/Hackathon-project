@@ -1,0 +1,121 @@
+#mainQuiz {
+    margin-top: 1%;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    color: white;
+  }
+  
+  #SubMainQuiz {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  #wrapperQuiz {
+    padding: 2rem;
+    border: 1px solid #4249b1;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 0px 15px black;
+    border-radius: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+  
+  .inpQuiz {
+    border: 1px solid #4249b1;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    background-color: #121212;
+    color: white;
+  }
+  
+  .subQuiz {
+    border: 1px solid #4249b1;
+    border-radius: 5px;
+    padding: 0.5rem;
+    background-color: #121212;
+    color: white;
+  }
+  
+  .answer-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  #resQuiz,
+  #submitQuiz,
+  #addQuiz {
+    font-weight: bold;
+    font-size: larger;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+  
+  #resQuiz {
+    background-color: #a12121;
+    color: white;
+  }
+  
+  #submitQuiz {
+    background-color: #1f7a1f;
+    color: white;
+  }
+  
+  #addQuiz {
+    background-color: aliceblue;
+    width: 5dvh;
+    height: 5vh;
+    border-radius: 50%;
+    background-image: url(../assets/plus.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+  }
+  
+  #buttons-containerQuiz {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .delete-btnQuiz {
+    background-color: rgba(31, 31, 31, 0);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 3vh;
+    height: 3vh;
+    background-image: url(../assets/del.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #mainQuiz span,
+  input,
+  option,
+  select,
+  label,
+  button {
+    color: white;
+  }
+  
