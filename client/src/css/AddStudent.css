@@ -1,16 +1,17 @@
 #mainAssign{
     margin: 0 auto;
-    margin-top: 6%;
-    width: 60%;
+    margin-top: 3%;
+    width: 70%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-content: center;
     align-items: center;
-    gap: 5%;
 }
 
 #userFrame{
-    padding-top: 5%;
+    padding-top: 6%;
+    margin-bottom: 5%;
     height: 55vh;
     width: 40%;
     border: 1px solid rgb(66, 73, 177);
@@ -28,16 +29,85 @@
     background-color: rgba(0, 0, 0, 0.514);
     box-shadow: 0px 0px 40px black;
     border-radius: 20px;
-    height: 40%;
-    width: 30%;
+    height: 20vh;
+    width: 40%;
 }
 
-#AddStud input,label{
+#Warning{
+    text-align: center;
+    font-weight: 1000;
+    font-size: 5vh;
+}
+
+#AddStud #user,label{
     color: white;
 }
 
-#feild{
-    background-color: black;
+#search{
+    margin-top: 5%;
+    width: 50%;
+    background-color: rgb(28, 40, 83);
+    transition: 0.3s;
+    border: 1px solid rgb(66, 73, 177);
+    border-radius: 15px;
+    font-size: small;
+    font-weight: 500;
+    padding: 5px;
+}
+
+#search:hover{
+    filter: drop-shadow( 0px 0px 5px rgb(255, 187, 0));
+    transition: 0.3s;
+}
+
+#field{
     width: 100%;
-    height: 5vh;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10%;
+} 
+
+#second{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 60%;
+}
+
+#field p{
+    color: white;
+}
+
+#field div div{
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+    gap: 20%;
+    width: 100%;
+}
+
+#field img{
+    height: 20vh;
+    width: 20vh;
+}
+
+#addstud{
+    width: 60%;
+    background-color: rgb(28, 40, 83);
+    transition: 0.3s;
+    border: 1px solid rgb(66, 73, 177);
+    border-radius: 15px;
+    font-size: larger;
+    font-weight: 500;
+    padding: 5px;
+}
+
+#addstud:hover{
+    width: 65%;
+    filter: drop-shadow( 0px 0px 5px rgb(255, 187, 0));
+    transition: 0.3s;
 }

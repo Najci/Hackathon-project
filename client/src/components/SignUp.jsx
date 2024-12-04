@@ -23,7 +23,6 @@ const SignUp = ({user}) => {
 
     axios.post('http://localhost:3000/signup', formData)
     .then(function (response) {
-      setMessage(response.data)
       navigate('/signup')
     })
     .catch(function (error) {

@@ -1,32 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import '../css/AddStudent.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Field from './Builder/Field';
 
 const frame = document.getElementById('userFrame')
 
-class newItem{
-    constructor(data){
-        const field = document.createElement('div');
-        field.setAttribute('id', 'feild')
-          
-        const username = document.createElement('span');
-        username.innerText = data.username;
-        field.appendChild(username);
+const AddStudent = ({cookie}) => {
 
-        const button = document.createElement('button');
-        button.innerText = "Click Me"; 
-        
-        field.appendChild(button);
+    const [message, setMessage] = useState('Please search for a student');
+    const [studentData, setStudentData] = useState(null);
 
-        frame.appendChild(field)
+    const add = (userID) => {
+        axios.post('http://localhost:3000/teacher/addstudent', {data: userID, cookie: cookie})
+        .then(function (response){
+            console.log(response.data)
+            setStudentData(null)
+            setMessage('Student has been added')
+        })
+        .catch(function(error) {
+            setMessage(error.message)
+        })
     }
-}
-
-const AddStudent = (cookie) => {
-
-    const [message, setMessage] = useState('');
-    const navigate = useNavigate()
 
     const submit = (e) => {
         e.preventDefault();
@@ -34,9 +29,10 @@ const AddStudent = (cookie) => {
         const form = new FormData(e.target); 
         const formData = Object.fromEntries(form.entries())
     
-        axios.post('http://localhost:3000/teacher/addstudent', {data : formData, cookie : cookie})
+        axios.post('http://localhost:3000/teacher/search', {data : formData, cookie : cookie})
         .then(function (response) {
-            const NewElement = new newItem(response.data)
+            setStudentData(response.data)
+            setMessage('')
         })
         .catch(function (error) {
             console.log(error.response)
@@ -46,8 +42,12 @@ const AddStudent = (cookie) => {
 
 
     return (
+        
         <div id='mainAssign'>
-            <div id='userFrame'> </div>
+            <div id='userFrame'>
+                <p id='Warning'>{message}</p>
+                {studentData ? <Field data={studentData} addStudent={add} /> : null}
+            </div>
 
             <form id='AddStud' onSubmit={submit}>
                 <div>
@@ -56,8 +56,9 @@ const AddStudent = (cookie) => {
                     <input type="text" name='username' id='user'/>
                 </div>
                 
-                <input type="submit" />
+                <input id='search' value='Search' type="submit" />
             </form>
+            
         </div>
     )
 }

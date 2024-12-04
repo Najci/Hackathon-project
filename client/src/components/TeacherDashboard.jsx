@@ -31,7 +31,7 @@ const TeacherDashboard = ({user}) => {
 
   return (
     <>
-      <p id='Welcome'>Welcome {user.username}</p>
+      <p id='Welcome'>Welcome, {user.username}</p>
 
       <div id="mainDash">
 
@@ -44,7 +44,7 @@ const TeacherDashboard = ({user}) => {
           </div>
 
           <div className='box' id="add" >
-            <Link to='/teacher/dashboard/addstudents' style={{textDecoration: 'none'}}>
+            <Link to='/teacher/addstudent' style={{textDecoration: 'none'}}>
               <img src={addicon} id="addicon"/>
               <p>Add Student</p>
             </Link>
@@ -52,13 +52,17 @@ const TeacherDashboard = ({user}) => {
     
 
           <div className='box' id="view" >
-            <img src={viewicon} id="viewicon"/>
-            <p>View Student</p>
+            <Link to={'/teacher/viewstudents/' + user.username}style={{textDecoration: 'none'}}>
+              <img src={viewicon} id="viewicon"/>
+              <p>View Students</p>
+            </Link>
           </div>
     
           <div className='box' id="settings">
-            <img src={assignicon} id="wheel"/>
-            <p>Add Asignments</p>
+            <Link to='/teacher/addassignment' style={{textDecoration: 'none'}}>
+              <img src={assignicon} id="wheel"/>
+              <p>Add Assignments</p>
+            </Link>
           </div>
 
         </div>

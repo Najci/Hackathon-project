@@ -32,7 +32,7 @@ const StudentDashboard = ({user}) => {
   return (
 
     <>
-      <p id='Welcome'>Welcome {user.username}</p>
+      <p id='Welcome'>Welcome, {user.username}</p>
 
       <div id="mainDash">
 

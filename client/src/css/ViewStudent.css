@@ -1,0 +1,50 @@
+#ViewStudentMain{
+    margin: 0 auto;
+    margin-top: 5%;
+    width: 70%;
+    padding: 5px;
+}
+
+#ViewStudentMain #SubMain{ 
+    padding: 5%;
+    margin: 0 auto;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    height: 60vh;
+    width: 70%;
+    overflow-y: scroll;
+}
+
+#ViewStudentMain #SubMain table{
+    border-collapse: collapse;
+    margin: 0 auto;
+    width: 100%;
+}
+
+td{
+    text-align: left;
+    color: white;
+}
+
+th,td{
+    padding: 1%;
+    height: 1px;
+    border: 1px solid rgb(66, 73, 177);
+    text-wrap: wrap;
+}
+
+#rem{
+    border: none;
+}
+
+#rem button{
+    color: white;
+    background-color: red;
+    border: 1px solid rgb(66, 73, 177);
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    font-weight: 1000;
+}

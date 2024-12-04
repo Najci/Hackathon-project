@@ -42,11 +42,12 @@ nav{
 #Logout button{
     border-radius: 50%;
     height: 7vh;
-    width: 7vh;
+    width: 50%;
     margin-right: 10%;
     border: 1px solid rgb(66, 73, 177);
     background-color: rgba(0, 0, 0, 0.514);
     box-shadow: 0px 0px 40px black;
-    border-radius: 50%;
+    border-radius: 25px;
     font-weight: 600;
+    font-size: 20px;
 }

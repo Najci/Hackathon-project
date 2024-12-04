@@ -18,7 +18,7 @@
 #scoreboard{
     width: 25%;
     height: 68vh;
-
+    margin-right: 2%;
     border: 1px solid rgb(66, 73, 177);
     background-color: rgba(0, 0, 0, 0.514);
     box-shadow: 0px 0px 40px black;
@@ -48,12 +48,18 @@
     transition: 0.1s ease-in all;
 }
 
+#Sub div:hover{
+    box-shadow: 0px 0px 5px rgb(255, 187, 0);
+    transition: 0.1s ease-in all;
+}
+
 #Sub img{
     width: 10vw;
     height: 10vw;
 }
 
 #Sub p{
+    text-align: center;
     margin-top: 5%;
     color: white;
 }

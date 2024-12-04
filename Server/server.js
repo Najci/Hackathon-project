@@ -184,14 +184,14 @@ app.get('/teacher/dashboard', async (req,res)=>{
 
 })
 
-app.post('/teacher/addstudent', async (req, res)=>{ 
+app.post('/teacher/search', async (req, res)=>{ 
 // stavi da ne mogu dva ista studenta / teachera
     console.log(req.body);
 
     if (!req.body.cookie){
         return res.send("not authorised")
     }
-    teacherUsername = req.body.cookie.user.user.username;
+    teacherUsername = req.body.cookie.user.username;
     teacherId = (await User.find({username: teacherUsername}))[0].id
     const schema = Joi.object({
         username: Joi.string().required()
@@ -203,61 +203,30 @@ app.post('/teacher/addstudent', async (req, res)=>{
     }
     studentUsername = req.body.data.username;
     student = await User.findOne({username: studentUsername, role: "student"})
-    console.log(student);
+    
     if (!student){
         res.status(400)
         return res.send("Cannot add a teacher.")
     }
     studentId = student.id;
-    try{
-        await User.updateOne(
-            { username: teacherUsername },
-            { $push: { students: studentId } } 
-        );
-        await User.updateOne(
-            { username: studentUsername },
-            { $push: { teachers: teacherId } } 
-        );
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Unable to add student");
-    }   
+
     res.json(student);
 
   })
 
-  /* app.post('/teacher/addstudent', async (req, res)=>{ 
+app.post('/teacher/addstudent', async (req, res)=>{ 
     // stavi da ne mogu dva ista studenta / teachera
-        console.log(req.body);
-    
-        if (!req.body.cookie){
-            return res.send("not authorised")
-        }
-        teacherUsername = req.body.cookie.user.user.username;
-        teacherId = (await User.find({username: teacherUsername}))[0].id
-        const schema = Joi.object({
-            username: Joi.string().required()
-        })
-        const { error, value } = schema.validate({username: req.body.data.username})
-        if (error){
-            res.status(400);
-            return res.send(error.message);
-        }
-        studentUsername = req.body.data.username;
-        student = await User.findOne({username: studentUsername, role: "student"})
-        if (!student){
-            return res.send("ne moze")
-        }
-        studentId = student.id;
+       teacherUsername = req.body.cookie.user.username;
+       studentId = req.body.data;
+       console.log("POSTEDD")
         try{
             await User.updateOne(
                 { username: teacherUsername },
-                { $push: { students: studentId } } 
+                { $addToSet: { students: studentId } } 
             );
             await User.updateOne(
                 { username: studentUsername },
-                { $push: { teachers: teacherId } } 
+                { $addToSet: { teachers: teacherId } } 
             );
         }
         catch (err){
@@ -265,13 +234,13 @@ app.post('/teacher/addstudent', async (req, res)=>{
             res.status(500).send("Unable to add student");
         }   
         res.json(student);
-    
-      }) */
+    })
 
-app.post('/createquiz', async(req,res)=>{
+
+app.post('/teacher/createquiz', async(req,res)=>{
     // postuje se select sa jednim od 10 mogucih predmeta
     // postuje se list of questions, svaki question ima svoj tekst i list of 4 answers, svaki answer u sebi ima answerText i isCorrect boolean.
-    data = req.body;
+    data = req.body.data;
     
     subject = data.subject;
     const schema = Joi.object({
@@ -281,7 +250,7 @@ app.post('/createquiz', async(req,res)=>{
     if (error){
         res.status(400).send("Invalid subject");
     }
-    questions = req.body.questions;
+    questions = data.questions;
     let listOfQuestions = [];
     for (let question of questions){
         let listOfAnswers = []
@@ -295,7 +264,7 @@ app.post('/createquiz', async(req,res)=>{
         savedQuestion = await savedQuestion.save();
         listOfQuestions.push(savedQuestion.id);
     }
-    teacherUsername = req.session.user.username
+    teacherUsername = req.body.cookie.user.username
     data.questions = listOfQuestions;
     let quiz = new Quiz(data);
     quiz = await quiz.save();
@@ -305,37 +274,49 @@ app.post('/createquiz', async(req,res)=>{
     );
 })
 
-app.get('/assign', async (req, res)=>{
+app.get('/teacher/assign', async (req, res)=>{
     // pokazuje sve quizzes i students jednog teachera
-    teacherUsername = req.session.user.username
-    teacher = (await User.find({username: teacherUsername}))[0]
+    teacherUsername = req.body.cookie.user.username
+    teacher = await User.findOne({username: teacherUsername})
     quizzes = teacher.quizzes;
     students = teacher.students;
     
     res.json({quizzes: quizzes, students:students})
 })
 
-app.post('/assign', async (req, res)=>{
+
+app.get('/teacher/viewstudents/:username', async(req,res)=>{
+    console.log("VIEW");
+    teacherUsername = req.params.username;
+    teacher = (await User.find({username: teacherUsername}))[0]
+    studentID = teacher.students;
+    students = (await User.find({_id: studentID})) 
+    res.status(200);
+    res.json(students);
+})
+
+
+app.post('/teacher/assign', async (req, res)=>{
 
     // postuje se select quiza, checkbox studenata, duedate
-    teacherUsername = req.session.user.username
+    teacherUsername = req.body.cookie.user.username
     teacher = (await User.find({username: teacherUsername}))[0]
     // TODO: error-checking
     quizzes = teacher.quizzes;
     students = teacher.students;
 
-    data = req.body;
+    data = req.body.data;
     
     let assignment = new Assignment(data);
     assignment = await assignment.save();
     res.send(assignment);
 })
 
-app.get('/assignments/', async (req, res)=>{
+app.get('/student/assignments/', async (req, res)=>{
     // trebalo bi da radi, proveri kad max napravi frontend
     // ako ne radi srecno
-
-    studentUsername = req.session.user.username;
+    
+    studentUsername = req.body.cookie.user.username;
     studentId = (await User.find({username: studentUsername}))[0].id
     assignments = await Assignment.find({students: { $in:  [studentId]}})
     for (let assignment of assignments){
