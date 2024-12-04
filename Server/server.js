@@ -293,8 +293,12 @@ app.get('/teacher/viewstudents/:username', async(req,res)=>{
     res.status(200);
     res.json(students);
 })
-app.delete('/teacher/removestudent/', async(req,res)=>{
-    console.log(req.body);
+app.post('/teacher/removestudent/', async(req,res)=>{
+    teacherUsername = req.body.cookie.user.username;
+    studentId = req.body.data;
+    await User.updateOne({username: teacherUsername}, {$pull: {students: studentId}})
+    console.log(teacherUsername);
+    res.send("Deleted student.");
 })
 
 
