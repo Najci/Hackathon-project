@@ -1,0 +1,101 @@
+#mainDash{
+    margin: 0 auto;
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+
+}
+
+#scoreboard{
+    width: 25%;
+    height: 68vh;
+
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+}
+
+#Sub{
+    width: 80%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5%;
+}
+
+#Sub div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    border-radius: 5%;
+    box-shadow: 0px 0px 40px black;
+    transition: 0.1s ease-in all;
+}
+
+#Sub img{
+    width: 10vw;
+    height: 10vw;
+}
+
+#Sub p{
+    margin-top: 5%;
+    color: white;
+}
+
+#quiz{
+    width: 40%;
+    height: 30vh;
+}
+
+#profile{
+    width: 20%;
+    height: 30vh;
+}
+
+#add{
+    width: 20%;
+    height: 30vh;
+}
+
+#view{
+    width: 20%;
+    height: 30vh;
+}
+
+#settings{
+    width: 20%;
+    height: 30vh;
+}
+
+#quiz:hover{
+    width: 41%;
+    height: 31vh;
+}
+
+#profile:hover{
+    width: 21%;
+    height: 31vh;
+}
+
+#add:hover{
+    width: 21%;
+    height: 31vh;
+}
+
+#view:hover{
+    width: 21%;
+    height: 31vh;
+}
+
+#settings:hover{
+    width: 21%;
+    height: 31vh;
+}

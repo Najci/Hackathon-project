@@ -6,7 +6,9 @@ import Header from './components/HeaderStudent'
 import SignUp from './components/SignUp'
 import Footer from './components/Footer'
 import Login from './components/Login'
-import Dashboard from './components/Dashboard'
+import TeacherDashboard from './components/TeacherDashboard';
+import StudentDashboard from './components/StudentDashboard';
+import AddStudent from './components/AddStudent';
 
 const router = createBrowserRouter(
   createRoutesFromChildren(
@@ -19,7 +21,9 @@ const router = createBrowserRouter(
     }>
       <Route path='/signup' element={<SignUp />} />
       <Route path='/login' element={<Login />} />
-      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path='/teacher/dashboard' element={<TeacherDashboard />} />
+      <Route path='/student/dashboard' element={<StudentDashboard />} />
+      <Route path='/teacher/dashboard/addstudents' element={<AddStudent />} />
     </Route>
   )
 )

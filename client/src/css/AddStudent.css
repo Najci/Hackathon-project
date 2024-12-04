@@ -1,0 +1,11 @@
+#mainAssign{
+    margin: 0 auto;
+    background-color: black;
+    height: 110vh;
+    width: 30%;
+}
+
+#userFrame{
+    background-color: aqua;
+    height: 50%;
+}

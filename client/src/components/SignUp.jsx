@@ -8,17 +8,10 @@ const SignUp = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
+  
   useEffect(() => {
-    fetch('/signup') 
-        .then((response) => {
-          if (response.ok){
-
-            console.log("ok"),
-
-            <Navigate  to='/signup' />
-          }
-        })
-        .then((data) => setMessage(data.message))
+    fetch('http://localhost:3000/signup')
+      .then((data) => setMessage(data.message))
   }, []);
 
   const submit = (e) => {
@@ -27,10 +20,10 @@ const SignUp = () => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('/signup', formData)
+    axios.post('http://localhost:3000/signup', formData)
     .then(function (response) {
       setMessage(response.data)
-      navigate('/login')
+      navigate('/signup')
     })
     .catch(function (error) {
       setMessage(error.response.data)
@@ -87,13 +80,13 @@ const SignUp = () => {
             </div>
 
             <label id='SignLabel' htmlFor="S_T">Sign up as:</label>
-            <p id='Error'>{message}</p>
 
             <div id='S_T'>
-              
               <label htmlFor="prof">Teacher: <input type="radio" name="role" id="prof" value="teacher" /></label>
               <label htmlFor="stud">Student: <input type="radio" name="role" id="stud" value="student"/></label>
             </div>
+
+            <p id='Error'>{message}</p>
 
             <input id='Sign' type="submit" value="Sign Up"  name='button'/>
         </form>

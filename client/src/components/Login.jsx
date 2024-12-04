@@ -6,11 +6,8 @@ import axios from 'axios';
 
 const Login = () => {
   const [message, setMessage] = useState('');
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    fetch('/.netlify/functions/server/signup') 
-        .then((data) => setMessage(data.message))
-  }, []);
 
   const submit = (e) => {
     e.preventDefault();
@@ -18,9 +15,19 @@ const Login = () => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('/.netlify/functions/server/signup', formData)
+    axios.post('http://localhost:3000/login', formData)
     .then(function (response) {
-      setMessage(response.data)
+      console.log(response.data.role)
+      if (response.data.role === "teacher"){
+        navigate('/teacher/dashboard')
+      }
+      else if(response.data.role === "student"){
+        navigate('/student/dashboard')
+      }
+      else{
+        navigate('/login')
+      }
+
     })
     .catch(function (error) {
       setMessage(error.response.data)
@@ -42,7 +49,7 @@ const Login = () => {
         <div id='passLog'>
           <label htmlFor="pass">Password:</label>
           <br />
-          <input className='inputField' name="password" type='password' id="pass"/>
+          <input className='inputField' name="password" type='password' id="passLog"/>
         </div>
 
         <p id='Error'>{message}</p>
