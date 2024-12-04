@@ -1,11 +1,36 @@
 #mainAssign{
     margin: 0 auto;
-    background-color: black;
-    height: 110vh;
-    width: 30%;
+    margin-top: 6%;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    gap: 5%;
 }
 
 #userFrame{
-    background-color: aqua;
-    height: 50%;
+    height: 55vh;
+    width: 30%;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+}
+
+#AddStud{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    height: 40%;
+    width: 30%;
+}
+
+#AddStud input,label{
+    color: white;
 }

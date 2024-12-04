@@ -162,7 +162,7 @@ app.post('/login', async (req, res) => {
                     } else {
                         console.log("AJDE")
                         res.status(201);
-                        res.json(req.session.user); // Session is now available
+                        res.json(req.session); // Session is now available
                     }
                 });
             }
@@ -182,7 +182,6 @@ app.get('/student/dashboard', (req,res)=>{
 app.get('/teacher/dashboard', (req,res)=>{
     res.json(req.session.user);
 })
-
 
 app.post('/teacher/dashboard/addstudent', async (req, res)=>{ 
 

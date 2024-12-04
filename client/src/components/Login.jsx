@@ -4,9 +4,16 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import '../css/Login.css'
 import axios from 'axios';
 
-const Login = () => {
+const Login = ({ CreateCookie, user }) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user){
+      navigate('/'+user.role+'/dashboard')
+      console.log('workin')
+    }
+  }, [])
 
 
   const submit = (e) => {
@@ -17,20 +24,12 @@ const Login = () => {
 
     axios.post('http://localhost:3000/login', formData)
     .then(function (response) {
-      console.log(response.data.role)
-      if (response.data.role === "teacher"){
-        navigate('/teacher/dashboard')
-      }
-      else if(response.data.role === "student"){
-        navigate('/student/dashboard')
-      }
-      else{
-        navigate('/login')
-      }
+      CreateCookie(response.data.user)
+      navigate('/'+response.data.user.role+'/dashboard')
 
     })
     .catch(function (error) {
-      setMessage(error.response.data)
+      setMessage(error.response)
     });
   }
 

@@ -5,28 +5,48 @@ header{
     margin: 0 auto;
     font-size: x-large;
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 6%;
+    justify-content: space-between;
     background-color: rgb(31, 38, 63);
 }
 
 h1{
     text-shadow: 0px 0px 50px rgb(255, 221, 128);
     margin-left: 1%;
+    width: 15%;
 }
 
 nav{
-    width: 100%;
+    width: 50%;
     height: 9vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 3%;
-    margin-left: -17%;
 }
 
 .nav-Link{
     text-decoration: none;
     font-size: xx-large;
+    font-weight: 650;
+}
+
+#Logout{
+    width: 15%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+#Logout button{
+    border-radius: 50%;
+    height: 7vh;
+    width: 7vh;
+    margin-right: 10%;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 50%;
+    font-weight: 600;
 }

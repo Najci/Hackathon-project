@@ -9,7 +9,7 @@ import assignicon from '../assets/assign.png'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-const StudentDashboard = () => {
+const StudentDashboard = ({user}) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
@@ -30,28 +30,33 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div id="mainDash">
 
-      <div id="scoreboard" ></div>
+    <>
+      <p id='Welcome'>Welcome {user.username}</p>
 
-      <div id='Sub'>
-        <div className='box' id="profile" >
-          <img src={proficon} id="proficon"/>
-          <p>Profile</p>
-        </div>
-  
-        <div className='box' id="quiz" >
-          <img src={quizicon} id="quizicon"/>
-          <p>Quiz</p>
-        </div>
-  
-        <div className='box' id="settings">
-          <img src={assignicon} id="wheel"/>
-          <p>Add Asignments</p>
-        </div>
+      <div id="mainDash">
 
-      </div>
-  </div>
+        <div id="scoreboard" ></div>
+
+        <div id='Sub'>
+          <div className='box' id="profile" >
+            <img src={proficon} id="proficon"/>
+            <p>Profile</p>
+          </div>
+    
+          <div className='box' id="quiz" >
+            <img src={quizicon} id="quizicon"/>
+            <p>Quiz</p>
+          </div>
+    
+          <div className='box' id="settings">
+            <img src={assignicon} id="wheel"/>
+            <p>Add Asignments</p>
+          </div>
+
+        </div>
+    </div>
+  </>
   )
 }
 

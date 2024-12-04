@@ -4,15 +4,16 @@ import '../css/SignUp.css'
 import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SignUp = () => {
+const SignUp = ({user}) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
-  
   useEffect(() => {
-    fetch('http://localhost:3000/signup')
-      .then((data) => setMessage(data.message))
-  }, []);
+    if (user){
+      navigate('/'+user.role+'/dashboard')
+      console.log('workin')
+    }
+  }, [])
 
   const submit = (e) => {
     e.preventDefault();

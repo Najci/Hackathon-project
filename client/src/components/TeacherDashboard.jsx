@@ -9,7 +9,7 @@ import assignicon from '../assets/assign.png'
 import axios from 'axios'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({user}) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
@@ -30,43 +30,45 @@ const TeacherDashboard = () => {
   }, []);
 
   return (
-    <div id="mainDash">
+    <>
+      <p id='Welcome'>Welcome {user.username}</p>
 
-      <p>{message}</p>
+      <div id="mainDash">
 
-      <div id="scoreboard" ></div>
+        <div id="scoreboard" ></div>
 
-      <div id='Sub'>
-        <div className='box' id="profile" >
-          <img src={proficon} id="proficon"/>
-          <p>Profile</p>
-        </div>
-  
-        <div className='box' id="quiz" >
-          <img src={quizicon} id="quizicon"/>
-          <p>Quiz</p>
-        </div>
-
-          <div className='box' id="add" >
-            <Link to='/teacher/dashboard/addstudents' style={{textDecoration: 'none'}}>
-              <img src={addicon} id="addicon"/>
-              <p>Add Student</p>
-            </Link>
+        <div id='Sub'>
+          <div className='box' id="profile" >
+            <img src={proficon} id="proficon"/>
+            <p>Profile</p>
           </div>
-  
+    
+          <div className='box' id="quiz" >
+            <img src={quizicon} id="quizicon"/>
+            <p>Quiz</p>
+          </div>
 
-        <div className='box' id="view" >
-          <img src={viewicon} id="viewicon"/>
-          <p>View Student</p>
-        </div>
-  
-        <div className='box' id="settings">
-          <img src={assignicon} id="wheel"/>
-          <p>Add Asignments</p>
-        </div>
+            <div className='box' id="add" >
+              <Link to='/teacher/dashboard/addstudents' style={{textDecoration: 'none'}}>
+                <img src={addicon} id="addicon"/>
+                <p>Add Student</p>
+              </Link>
+            </div>
+    
 
-      </div>
-  </div>
+          <div className='box' id="view" >
+            <img src={viewicon} id="viewicon"/>
+            <p>View Student</p>
+          </div>
+    
+          <div className='box' id="settings">
+            <img src={assignicon} id="wheel"/>
+            <p>Add Asignments</p>
+          </div>
+
+        </div>
+    </div>
+  </>
   )
 }
 

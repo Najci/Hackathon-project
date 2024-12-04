@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import '../css/AddStudent.css'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AddStudent = () => {
 
@@ -25,9 +26,17 @@ const AddStudent = () => {
 
     return (
         <div id='mainAssign'>
-            <div id='userFrame'>
+            <div id='userFrame'> </div>
 
-            </div>
+            <form id='AddStud' onSubmit={submit}>
+                <div>
+                    <label htmlFor="user">Username of student:</label>
+                    <br />
+                    <input type="text" name='username' id='user'/>
+                </div>
+                
+                <input type="submit" />
+            </form>
         </div>
     )
 }
