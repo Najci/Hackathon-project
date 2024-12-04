@@ -14,7 +14,7 @@ import AboutUs from './components/AboutUs';
 import axios from 'axios';
 import Quiz from './components/Quiz';
 import { ViewStudents } from './components/ViewStudents';
-import AddAssignment from './components/AddAssignment';
+import CreateQuiz from './components/CreateQuiz';
 
 
 
@@ -67,7 +67,7 @@ function App() {
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
         <Route path='/student/dashboard/quiz' element={<ProtectedRoute element={<Quiz id='student' />} user={cookie.user} />} />
         <Route path={`/teacher/viewstudents/${cookie.user?.username}`} element={<ProtectedRoute element={<ViewStudents cookie={cookie} id="teacher" username={cookie.user?.username} />} user={cookie.user} />} />
-        <Route path='/teacher/addassignment' element={<ProtectedRoute element={<AddAssignment cookie={cookie} id='teacher' />} user={cookie.user}/>} />
+        <Route path='/teacher/addassignment' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
       </Route>
     )
   );

@@ -7,6 +7,8 @@ const Joi = require('joi');
 const bcrypt = require('bcryptjs')
 const saltRounds = 1;
 const session = require('express-session')
+const qs = require('qs');
+
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI("AIzaSyCcnoqG6EFuJfRyBOGzxlGKM1lM8AfWe5A");
@@ -252,6 +254,9 @@ app.post('/teacher/addstudent', async (req, res)=>{
         res.json(student);
     })
 
+function parseQuizData(data){
+
+}
 
 app.post('/teacher/createquiz', async(req,res)=>{
     // postuje se select sa jednim od 10 mogucih predmeta
