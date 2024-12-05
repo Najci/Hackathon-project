@@ -17,6 +17,7 @@ import CreateQuiz from './components/CreateQuiz';
 import AddAssignment from './components/AddAssignment';
 import MiddleDashboard from './components/MiddleDashboard';
 import StudentQuiz from './components/StudentQuiz';
+import PastAssignment from './components/PastAssignment';
 
 const ProtectedRoute = ({ element, user, username }) => {
   if (!user) {
@@ -69,7 +70,7 @@ function App() {
       </>
       }>
         <Route path='/aboutus' element={<AboutUs />} />
-        <Route path="/signup" element={<SignUp user={cookie.user} />} />
+        <Route path="/signup" element={<SignUp CreateCookie={handleLogin} user={cookie.user} />} />
         <Route path="/login" element={<Login CreateCookie={handleLogin} user={cookie.user} />} />
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
         <Route path='/teacher/createquiz' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
@@ -78,6 +79,7 @@ function App() {
         <Route path={`/teacher/assign/${cookie.user?.username}`} element={<ProtectedRoute element={<AddAssignment cookie={cookie} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path={`/teacher/dashboard/${cookie.user?.username}`} element={<ProtectedRoute element={<TeacherDashboard cookie={cookie.user} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path={`/student/dashboard/${cookie.user?.username}`} element={<ProtectedRoute element={<StudentDashboard cookie={cookie.user} id='student' username={cookie.user?.username}/>} user={cookie.user} />} />
+        <Route path={`/student/pastassignments/${cookie.user?.username}`} element={<ProtectedRoute element={<PastAssignment cookie={cookie.user} id='student' username={cookie.user?.username}/>} user={cookie.user} />} />
         <Route path="/student/:studentid/assignment/:assignmentid" element={<StudentAssignment />} />
       </Route>
     )

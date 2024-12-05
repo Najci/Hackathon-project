@@ -29,7 +29,7 @@ const Login = ({ CreateCookie, user }) => {
 
     })
     .catch(function (error) {
-      setMessage(error.response)
+      setMessage(error.response.data)
     });
   }
 

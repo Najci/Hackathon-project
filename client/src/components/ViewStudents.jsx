@@ -25,7 +25,7 @@ export const ViewStudents = ({cookie}) => {
             console.log(response.data)
             setStudentData(response.data)
 
-            if((response.data).length == 0){
+            if((response.data).length !== 0){
                 setMessage('')
             }
 

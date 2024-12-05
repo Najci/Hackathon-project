@@ -8,19 +8,21 @@ import viewicon from '../assets/view.png'
 import assignicon from '../assets/assign.png'
 import axios from 'axios'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import ShowScore from './Builder/ShowScore'
+import OptionAssignDashTeach from './Builder/OptionAssignDashTeach'
 
 const TeacherDashboard = ({cookie}) => {
-  const [message, setMessage] = useState('');
   const navigate = useNavigate()
+  const [data, setData] = useState([{quizName:'',students: []}]);
+  const [selectView, setSelectView] = useState(0)
 
   const SendCon = async () => {
     axios.get(`http://localhost:3000/teacher/dashboard/${cookie.username}`) 
-
     .then((response) => {
-      setMessage(response.data.message); 
+      console.log(response.data)
+      setData(response.data)
     })
     .catch((error) => {
-      navigate('/login')
       console.error('Error fetching data:', error); 
     });
   }
@@ -35,8 +37,28 @@ const TeacherDashboard = ({cookie}) => {
 
       <div id="mainDash">
 
-        <div id="scoreboard">
-
+        <div id='ScoreSec'>
+          <select name="" defaultValue="Def" id="OptionScoreSec" onSelect={(e) => {setSelectView(e.target.value)}}>
+            <option value="Def" disabled>Select an assignment</option>
+            {data.map((value, index)=> {
+                return <OptionAssignDashTeach key={index} index={index} data={value.quizName} />
+            })}
+          </select>
+  
+          <div id="scoreboard">
+            <table>
+              <thead>
+                <th>Student's name</th>
+                <th>Username</th>
+                <th>Score</th>
+              </thead>
+              <tbody>
+                {data[selectView].students.map((value, index) => {
+                  return <ShowScore key={index} data={value} />
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div id='Sub'>

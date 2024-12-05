@@ -32,10 +32,13 @@ function CreateQuiz({ cookie }) {
     // Send all data as an object to the server
     axios.post('http://localhost:3000/teacher/createquiz', { data: formData, cookie })
     .then(function(response) {
+        navigate(`/teacher/dashboard`)
         console.log(response.data);
-    });
-
-    navigate(`/teacher/dashboard/${cookie.user.username}`)
+    })
+    .catch(function(error) {
+      console.log(error)
+      setLoading(error.response.data)
+    })
   };
   const handleAI = async (e) => {
     e.preventDefault();

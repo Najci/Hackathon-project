@@ -1,12 +1,11 @@
 import React from 'react'
 
-const ShowScore = () => {
+const ShowScore = ({data}) => {
   return (
     <tr>
-      <td>{data.firstname}</td>
-      <td>{data.lastname}</td>
+      <td>{data.name}</td>
       <td>{data.username}</td>
-      <td>{data.email}</td>
+      <td>{data.score}</td>
     </tr>
   )
 }

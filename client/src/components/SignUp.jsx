@@ -4,7 +4,7 @@ import '../css/SignUp.css'
 import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SignUp = ({user}) => {
+const SignUp = ({user, CreateCookie}) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
@@ -23,11 +23,13 @@ const SignUp = ({user}) => {
 
     axios.post('http://localhost:3000/signup', formData)
     .then(function (response) {
-      navigate('/signup')
+      CreateCookie(response.data)
+      navigate('/dashboard')
     })
     .catch(function (error) {
       setMessage(error.response.data)
     });
+      
   }
 
   return (
