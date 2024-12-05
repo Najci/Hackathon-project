@@ -32,7 +32,7 @@ function CreateQuiz({ cookie }) {
     // Send all data as an object to the server
     axios.post('http://localhost:3000/teacher/createquiz', { data: formData, cookie })
     .then(function(response) {
-        navigate(`/teacher/dashboard`)
+        navigate(`/teacher/dashboard/${cookie.user.username}`)
         console.log(response.data);
     })
     .catch(function(error) {
