@@ -1,16 +1,21 @@
 import { useState } from "react";
 import "../css/CreateQuiz.css";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function CreateQuiz({ cookie }) {
-  const [wrappers, setWrappers] = useState([0]); // Initial question wrapper
+  const [wrappers, setWrappers] = useState([0]); 
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState('');
+
+  const navigate = useNavigate()
+
   const addWrapper = () => {
-    setWrappers([...wrappers, wrappers.length]); // Add a new wrapper with unique index
+    setWrappers([...wrappers, wrappers.length]);
   };
 
   const deleteWrapper = (indexToDelete) => {
-    setWrappers(wrappers.filter((_, index) => index !== indexToDelete)); // Delete the wrapper by its index
+    setWrappers(wrappers.filter((_, index) => index !== indexToDelete));
   };
 
   const resetQuiz = () => {
@@ -23,36 +28,37 @@ function CreateQuiz({ cookie }) {
 
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries());
-    console.log("POST")
+
     // Send all data as an object to the server
     axios.post('http://localhost:3000/teacher/createquiz', { data: formData, cookie })
     .then(function(response) {
         console.log(response.data);
     });
+
+    navigate(`/teacher/dashboard/${cookie.user.username}`)
   };
   const handleAI = async (e) => {
-    e.preventDefault(); // Prevent default button behavior
-    e.stopPropagation(); // Prevent event bubbling
-  
+    e.preventDefault();
+    e.stopPropagation();
+
+    setLoading('Loading... please wait'); // Start loading
     resetQuiz(); // Clear the quiz first
-  
-    // Get the input value directly from the DOM
+
     const topicInput = document.getElementById("aiInput").value;
-    const promptData = { topic: topicInput }; // Create the prompt data object
-  
+    const promptData = { topic: topicInput };
+
     try {
-      // Make the API call
-      const response = await axios.post('http://localhost:3000/teacher/createquiz/ai', { 
-        data: promptData, 
-        cookie 
+      const response = await axios.post('http://localhost:3000/teacher/createquiz/ai', {
+        data: promptData,
+        cookie,
       });
-  
+
       const questions = JSON.parse(response.data).questions;
-  
-      // Populate new questions after resetting
-      populateQuestions(questions);
+      populateQuestions(questions); // Populate new questions after resetting
     } catch (err) {
       console.error("Error fetching AI questions:", err);
+    } finally {
+      setLoading('Finished'); // End loading
     }
   };
 
@@ -83,10 +89,6 @@ function CreateQuiz({ cookie }) {
 
   return (
     <>
-      <div id="ai">
-        <input type="text" id="aiInput" name="topic" placeholder="Input prompt"></input>
-        <button type="button" onClick={handleAI}>Submit AI Prompt</button>
-      </div>
       <form id="mainQuiz" onSubmit={handleSubmit}>
         <span>Enter Quiz name:</span>
         <input
@@ -104,6 +106,7 @@ function CreateQuiz({ cookie }) {
           className="subQuiz"
           onChange={handleInputChange}
           value={formData.subject || ""}
+          id="SelQuiz"
         >
           <option value="Mathematics">Mathematics</option>
           <option>Science</option>
@@ -118,9 +121,21 @@ function CreateQuiz({ cookie }) {
           <option>Other</option>
         </select>
 
+        <div id="ai">
+          <label htmlFor="aiInput">Input AI topic:</label>
+          <input type="text" id="aiInput" name="topic" placeholder="Input prompt"></input>
+          <p>{loading}</p>
+        </div>
+          <button id="AiButton" type="button" onClick={handleAI}>Submit AI Prompt</button>
+
         <div id="SubMainQuiz">
           {wrappers.map((_, index) => (
             <div id="wrapperQuiz" key={index}>
+              <button type="button"
+              className="delete-btnQuiz"
+              onClick={() => deleteWrapper(index)}
+              title="Delete Question"
+            ></button>
               <span>Enter the Question:</span>
               <input
                 type="text"
@@ -134,7 +149,7 @@ function CreateQuiz({ cookie }) {
                 {["A", "B", "C", "D"].map((option, i) => (
                   <div key={i} className="answer-option">
                     <input
-                      type="radio"
+                      type="checkbox"
                       name={`question[${index}][answers][${i}][isCorrect]`}
                       checked={formData[`question[${index}][answers][${i}][isCorrect]`] || false}
                       onChange={(e) =>

@@ -2,8 +2,13 @@ const mongoose = require('mongoose');
 
 const assignmentSchema = new mongoose.Schema({
     quiz: {type: String, required: true},
-    students:  [{ type: mongoose.Schema.Types.ObjectId, ref: "Question"}],
-    dueDate: {type: mongoose.Schema.Types.Date}
+    students: [
+    {
+      studentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the user
+      score: { type: String }, // Score for this student
+    },
+  ],
+    dueDate: {type: mongoose.Schema.Types.Date, required: true}
 }
 )
 const Assignment = mongoose.model('Assignment', assignmentSchema);

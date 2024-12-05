@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate} from 'react-router-dom';
 import '../css/Login.css'
 import axios from 'axios';
 
@@ -10,7 +10,7 @@ const Login = ({ CreateCookie, user }) => {
 
   useEffect(() => {
     if (user){
-      navigate('/'+user.role+'/dashboard')
+      navigate('/' + user.role + '/dashboard/' + user.username)
       console.log('workin')
     }
   }, [])
@@ -22,10 +22,10 @@ const Login = ({ CreateCookie, user }) => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-    axios.post('http://localhost:3000/login', formData)
+     axios.post('http://localhost:3000/login', formData)
     .then(function (response) {
       CreateCookie(response.data.user)
-      navigate('/'+response.data.user.role+'/dashboard')
+      navigate('/dashboard')
 
     })
     .catch(function (error) {

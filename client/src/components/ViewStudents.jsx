@@ -5,6 +5,7 @@ import '../css/ViewStudent.css'
 
 export const ViewStudents = ({cookie}) => {
     const [studentData, setStudentData] = useState([]);
+    const [message, setMessage] = useState('No Students added!')
 
     const remove = (userID, element) =>{
         axios.post('http://localhost:3000/teacher/removestudent/', {data: userID, cookie: cookie})
@@ -21,7 +22,12 @@ export const ViewStudents = ({cookie}) => {
     const students = () =>{
         axios.get('http://localhost:3000/teacher/viewstudents/' + cookie.user.username, {cookie: cookie})
         .then(function(response) {
+            console.log(response.data)
             setStudentData(response.data)
+
+            if((response.data).length == 0){
+                setMessage('')
+            }
 
         })
         .catch(function(error) {
@@ -53,6 +59,8 @@ export const ViewStudents = ({cookie}) => {
                     })}
                 </tbody>
             </table>
+
+            <p>{message}</p>
         </div>
     </div>
   )

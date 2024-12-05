@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-export const StudentHeader = ({LogOut}) => {
+export const StudentHeader = ({cookie, LogOut}) => {
   const navigate = useNavigate()
 
   return (
@@ -9,7 +9,7 @@ export const StudentHeader = ({LogOut}) => {
        <h1><b>EduSphinx</b></h1>
 
         <nav>
-          <Link to='student/dashboard' style={{textDecoration: 'none'}}><div className='nav-Link'>Dashboard</div></Link>
+          <Link to={`student/dashboard/${cookie.username}`} style={{textDecoration: 'none'}}><div className='nav-Link'>Dashboard</div></Link>
           <Link to='/aboutus' style={{textDecoration: 'none'}}><div className='nav-Link'>About us</div></Link>
         </nav>
 

@@ -9,12 +9,12 @@ import assignicon from '../assets/assign.png'
 import axios from 'axios'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
-const TeacherDashboard = ({user}) => {
+const TeacherDashboard = ({cookie}) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
 
   const SendCon = async () => {
-    const con = await axios.get('http://localhost:3000/teacher/dashboard') 
+    axios.get(`http://localhost:3000/teacher/dashboard/${cookie.username}`) 
 
     .then((response) => {
       setMessage(response.data.message); 
@@ -31,11 +31,13 @@ const TeacherDashboard = ({user}) => {
 
   return (
     <>
-      <p id='Welcome'>Welcome, {user.username}</p>
+      <p id='Welcome'>Welcome, {cookie.username}</p>
 
       <div id="mainDash">
 
-        <div id="scoreboard" ></div>
+        <div id="scoreboard">
+
+        </div>
 
         <div id='Sub'>
           <div className='box' id="profile" >
@@ -52,16 +54,23 @@ const TeacherDashboard = ({user}) => {
     
 
           <div className='box' id="view" >
-            <Link to={'/teacher/viewstudents/' + user.username}style={{textDecoration: 'none'}}>
+            <Link to={`/teacher/viewstudents/${cookie.username}`}style={{textDecoration: 'none'}}>
               <img src={viewicon} id="viewicon"/>
               <p>View Students</p>
             </Link>
           </div>
     
-          <div className='box' id="settings">
-            <Link to='/teacher/addassignment' style={{textDecoration: 'none'}}>
-              <img src={assignicon} id="wheel"/>
+          <div className='box' id="CreateQuiz">
+            <Link to='/teacher/createquiz' style={{textDecoration: 'none'}}>
+              <img src={quizicon} id="wheel"/>
               <p>Create Quiz</p>
+            </Link>
+          </div>
+
+          <div className='box' id="AddAssignment">
+            <Link to={`/teacher/assign/${cookie.username}`} style={{textDecoration: 'none'}}>
+              <img src={assignicon} id="wheel"/>
+              <p>Create Assignment</p>
             </Link>
           </div>
 

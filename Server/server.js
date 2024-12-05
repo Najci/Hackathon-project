@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs')
 const saltRounds = 1;
 const session = require('express-session')
 const qs = require('qs');
-
+const mongoose = require('mongoose');
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI("AIzaSyCcnoqG6EFuJfRyBOGzxlGKM1lM8AfWe5A");
@@ -63,11 +63,11 @@ function createSession(data){
     
 }; */
 
-const isTeacher = (req, res, next) => {
+/* const isTeacher = (req, res, next) => {
     
     console.log(req.session.user.role);
     
-};
+}; */
 
 /* const isStudent = (req, res, next) => {
     if (req.session.user && req.session.user.role === "student") {
@@ -169,7 +169,6 @@ app.post('/login', async (req, res) => {
                 
                 // Session starts
                 req.session.user = createSession(users[0]);
-                console.log("unutra",req.session.user)
                 req.session.save((err) => {
                     if (err) {
                         res.status(500).send("Error saving session");
@@ -190,11 +189,47 @@ app.post('/login', async (req, res) => {
   });
 
 
-app.get('/student/dashboard', (req,res)=>{
-    res.json(req.session.user);
+app.get('/student/dashboard/:username', async (req,res)=>{
+    
+    studentUsername = req.params.username;
+    studentId = (await User.findOne({username: studentUsername})).id
+    const assignments = await Assignment.find({
+        students: {
+          $elemMatch: {
+            studentId: studentId,
+          }
+        }
+      });
+    let studentAssignments = []
+    for (let assignment of assignments){
+        let quiz = await Quiz.findOne({_id: assignment.quiz})
+        let teacher = (await User.find({quizzes: { $in:  [quiz]}}))[0]
+        console.log(assignment);
+        studentAssignment = {
+            ...assignment.toObject(),
+            teacherFirstName: teacher.firstname,
+            teacherLastName: teacher.lastname,
+            quizName: quiz.name,
+            quizSubject: quiz.subject
+        };
+
+        let today = new Date();
+        let due = new Date(studentAssignment.dueDate)
+        if (today < due){
+            studentAssignments.push(studentAssignment);
+        }
+    }
+    res.json(studentAssignments);
+
 })
-app.get('/teacher/dashboard', async (req,res)=>{
-    res.json(req.session.user);
+
+
+
+app.get('/dashboard/', async (req,res)=>{
+    
+})
+
+app.get('/teacher/dashboard/:username', async (req,res)=>{
 
 })
 
@@ -202,7 +237,7 @@ app.get('/teacher/dashboard', async (req,res)=>{
 
 app.post('/teacher/search', async (req, res)=>{ 
 // stavi da ne mogu dva ista studenta / teachera
-    console.log(req.body);
+    
 
     if (!req.body.cookie){
         return res.send("not authorised")
@@ -233,7 +268,6 @@ app.post('/teacher/addstudent', async (req, res)=>{
     // stavi da ne mogu dva ista studenta / teachera
        teacherUsername = req.body.cookie.user.username;
        studentId = req.body.data;
-       console.log("POSTEDD")
         try{
             await User.updateOne(
                 { username: teacherUsername },
@@ -288,7 +322,6 @@ function parseQuizData(inputData){
         }
         
       });
-    console.log(result);
     return result;
 }
 
@@ -297,9 +330,7 @@ app.post('/teacher/createquiz', async(req,res)=>{
     // postuje se list of questions, svaki question ima svoj tekst i list of 4 answers, svaki answer u sebi ima answerText i isCorrect boolean.
     inputData = req.body.data
     result = parseQuizData(inputData);
-    console.log(result);
     subject = result.subject;
-    console.log(subject)
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
     })
@@ -322,7 +353,7 @@ app.post('/teacher/createquiz', async(req,res)=>{
         listOfQuestions.push(savedQuestion.id);
     }
     teacherUsername = req.body.cookie.user.username
-    console.log(result);
+    
     result.questions = listOfQuestions;
     let _quiz = new Quiz(result);
     _quiz = await _quiz.save();
@@ -331,13 +362,79 @@ app.post('/teacher/createquiz', async(req,res)=>{
         { $push: { quizzes: _quiz } } 
     );
 })
+app.get('/student/:username/assignment/:assignmentid', async (req, res) => {
+    const assignmentId = req.params.assignmentid;
+  
+    // Fetch the assignment and quiz in parallel
+    const assignment = await Assignment.findOne({ _id: assignmentId });
+    const quiz = await Quiz.findOne({ _id: assignment.quiz });
+  
+    // Fetch all questions in one query
+    const questionIds = quiz.questions;
+    const questionsData = await Question.find({ _id: { $in: questionIds } });
+  
+    // Collect all answer IDs and fetch them in one query
+    const answerIds = questionsData.flatMap(question => question.answers);
+    const answersData = await Answer.find({ _id: { $in: answerIds } });
+  
+    // Map answers to their respective questions
+    const answersMap = new Map();
+    answersData.forEach(answer => {
+      answersMap.set(answer._id.toString(), answer);
+    });
+  
+    // Build the questions array
+    const questions = questionsData.map(question => ({
+      questionText: question.questionText,
+      answers: question.answers.map(answerId => answersMap.get(answerId.toString()))
+    }));
+  
+    // Construct the final quiz object
+    const newQuiz = {
+      name: quiz.name,
+      subject: quiz.subject,
+      questions
+    };
+  
+    res.json(newQuiz);
+});
+
+
+
+app.post('/student/:username/assignment/:assignmentid', async (req, res) => {
+    score = 0;
+    data = req.body.data;
+    studentAnswers = Object.keys(data);
+    for (let studentAnswer of studentAnswers){
+        answer = await Answer.findOne({_id: studentAnswer})
+
+        if (answer.isCorrect){
+            score++;
+        }
+    }
+    const assignmentId = req.params.assignmentid;
+    const assignment = await Assignment.findOne({ _id: assignmentId });
+    console.log(assignmentId);
+    const quiz = await Quiz.findOne({ _id: assignment.quiz });
+    n = quiz.questions.length;
+    stringScore = `${score}/${n}`
+    studentUsername = req.params.username;
+    studentId = (await User.findOne({username: studentUsername})).id;
+    console.log("studentid", studentId);
+    console.log("assignmentId", assignmentId);
+    newAssignment = await Assignment.findOneAndUpdate({_id: assignmentId, "students.studentId": { $in: studentId }}, 
+                                      { $set: { "students.$.score": stringScore} },
+                                    {new: true})
+    console.log(newAssignment);
+
+    
+});
+  
 app.post('/teacher/createquiz/ai', async(req,res)=>{
     topic = req.body.data.topic;
-    console.log(topic)
     const prompt = "You are a question and answer generator for teachers creating an online quiz. Send in JSON format 5-10 questions, each with EXCLUSIVELY 4 possible answers, one of which is correct. Omit the ```json bits. The keys should be called questionText, answerText, and isCorrect. The topic of the quiz is "+topic;
     const result = await model.generateContent(prompt);
     
-    console.log(result.response.text());
     res.json(result.response.text());
 })
 app.get('/teacher/assign/:username', async (req, res)=>{
@@ -352,16 +449,39 @@ app.get('/teacher/assign/:username', async (req, res)=>{
 })
 app.post('/teacher/assign', async (req, res)=>{
 
-    // postuje se select quiza, checkbox studenata, duedate
     teacherUsername = req.body.cookie.user.username
     teacher = (await User.find({username: teacherUsername}))[0]
     // TODO: error-checking
     quizzes = teacher.quizzes;
+    if (!quizzes){
+        
+    }
     students = teacher.students;
+    if (!students){
+        res.status(400).send("No students added")
+    }
 
     data = req.body.data;
     
-    let assignment = new Assignment(data);
+    const formattedStudents = data.students.map(studentId => ({
+        "studentId":studentId,
+        "score":null
+    }));
+    assignmentData = {
+        quiz: data.quiz,
+        students: formattedStudents,
+        dueDate: data.dueDate
+    };
+    
+    
+    if (!assignmentData.quiz){
+        return res.status(400).send("No quizzes selected")
+    }
+    if (!assignmentData.students){
+        return res.status(400).send("No students added")
+    }
+
+    let assignment = new Assignment(assignmentData);
     assignment = await assignment.save();
     res.send(assignment);
 })
@@ -380,7 +500,6 @@ app.post('/teacher/removestudent/', async(req,res)=>{
     teacherUsername = req.body.cookie.user.username;
     studentId = req.body.data;
     await User.updateOne({username: teacherUsername}, {$pull: {students: studentId}})
-    console.log(teacherUsername);
     res.send("Deleted student.");
 })
 
@@ -400,14 +519,13 @@ app.get('/student/assignments/', async (req, res)=>{
         assignment.teacherFirstName = teacher.firstname;
         assignment.teacherLastName = teacher.lastname;
     }
-    console.log(assignments);
     res.json(assignments);
 })
 
 
   // NEMOJ ZABORAVIS DA OBRISES
 app.get('/deletedb', async (req, res)=>{
-    await User.deleteMany({});
+    await Answer.deleteMany({});
     console.log('suc')
 })
 

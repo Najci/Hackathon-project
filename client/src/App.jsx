@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { createBrowserRouter, createRoutesFromChildren, Route, RouterProvider, Navigate, useNavigate, BrowserRouter } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { createBrowserRouter, createRoutesFromChildren, Route, RouterProvider, Navigate, useNavigate, BrowserRouter, useSearchParams, useParams } from 'react-router-dom';
 import '../src/css/App.css';
 import Main from './components/Main';
 import SignUp from './components/SignUp';
@@ -12,11 +12,11 @@ import { CookiesProvider, useCookies } from 'react-cookie';
 import MainHeader from './components/Headers/MainHeader';
 import AboutUs from './components/AboutUs';
 import axios from 'axios';
-import Quiz from './components/Quiz';
 import { ViewStudents } from './components/ViewStudents';
 import CreateQuiz from './components/CreateQuiz';
-
-
+import AddAssignment from './components/AddAssignment';
+import MiddleDashboard from './components/MiddleDashboard';
+import StudentQuiz from './components/StudentQuiz';
 
 const ProtectedRoute = ({ element, user, username }) => {
   if (!user) {
@@ -40,6 +40,16 @@ const ProtectedRoute = ({ element, user, username }) => {
 function App() {
   const [cookie, setCookie] = useCookies(['user']);
 
+  const StudentAssignment = () => {
+    const { assignmentid}= useParams();
+    return (
+        <ProtectedRoute
+          element={<StudentQuiz cookie={cookie.user} assignmentId={assignmentid} id="student"/>}
+          user={cookie.user}
+        />
+    );
+  };
+
   function handleLogin(user) {
     setCookie('user', user, { path: '/' });
   }
@@ -47,14 +57,13 @@ function App() {
   function handleLogout() {
     setCookie('user', '', { path: '/', expires: new Date(0) });
     console.log('User logged out');
-  }
-  
+  } 
 
   const router = createBrowserRouter(
     createRoutesFromChildren(
       <Route element={
       <>
-        <MainHeader user={cookie.user} LogOut={handleLogout} />
+        <MainHeader cookie={cookie.user} LogOut={handleLogout} />
         <Main />
         <Footer />
       </>
@@ -62,12 +71,14 @@ function App() {
         <Route path='/aboutus' element={<AboutUs />} />
         <Route path="/signup" element={<SignUp user={cookie.user} />} />
         <Route path="/login" element={<Login CreateCookie={handleLogin} user={cookie.user} />} />
-        <Route path="/teacher/dashboard" element={<ProtectedRoute element={<TeacherDashboard user={cookie.user} id='teacher' />} user={cookie.user} />} />
-        <Route path="/student/dashboard" element={<ProtectedRoute element={<StudentDashboard user={cookie.user} id='student'/>} user={cookie.user} />} />
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
-        <Route path='/student/dashboard/quiz' element={<ProtectedRoute element={<Quiz id='student' />} user={cookie.user} />} />
+        <Route path='/teacher/createquiz' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
+        <Route path={`/dashboard`} element={<MiddleDashboard cookie={cookie.user} />} user={cookie.user} />
         <Route path={`/teacher/viewstudents/${cookie.user?.username}`} element={<ProtectedRoute element={<ViewStudents cookie={cookie} id="teacher" username={cookie.user?.username} />} user={cookie.user} />} />
-        <Route path='/teacher/addassignment' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
+        <Route path={`/teacher/assign/${cookie.user?.username}`} element={<ProtectedRoute element={<AddAssignment cookie={cookie} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
+        <Route path={`/teacher/dashboard/${cookie.user?.username}`} element={<ProtectedRoute element={<TeacherDashboard cookie={cookie.user} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
+        <Route path={`/student/dashboard/${cookie.user?.username}`} element={<ProtectedRoute element={<StudentDashboard cookie={cookie.user} id='student' username={cookie.user?.username}/>} user={cookie.user} />} />
+        <Route path="/student/:studentid/assignment/:assignmentid" element={<StudentAssignment />} />
       </Route>
     )
   );

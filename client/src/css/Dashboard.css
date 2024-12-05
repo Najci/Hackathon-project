@@ -15,14 +15,44 @@
     margin-bottom: 2%;
 }
 
-#scoreboard{
-    width: 25%;
+#scoreboardStud{
+    width: 100%;
     height: 68vh;
-    margin-right: 2%;
     border: 1px solid rgb(66, 73, 177);
     background-color: rgba(0, 0, 0, 0.514);
     box-shadow: 0px 0px 40px black;
     border-radius: 20px;
+    padding: 2%;
+    overflow-y: scroll;
+}
+
+#scoreboard{
+    width: 30%;
+    height: 68vh;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    padding: 2%;
+    overflow-y: scroll;
+}
+
+
+#assignmentTable{
+    width: 100%;
+    border: none;
+    border-collapse: collapse;
+    text-wrap: wrap;
+}
+
+
+#assignmentTable td{
+    border: none;
+    text-align: center;
+}
+
+#assignmentTable th{
+    border: none;
 }
 
 #Sub{
@@ -64,8 +94,8 @@
     color: white;
 }
 
-#quiz{
-    width: 40%;
+#quizStud{
+    width: 50%;
     height: 30vh;
 }
 
@@ -74,8 +104,13 @@
     height: 30vh;
 }
 
+#profileStud{
+    width: 30%;
+    height: 30vh;  
+}
+
 #add{
-    width: 20%;
+    width: 40%;
     height: 30vh;
 }
 
@@ -84,7 +119,12 @@
     height: 30vh;
 }
 
-#settings{
+#AddAssignment{
+    width: 20%;
+    height: 30vh;
+}
+
+#CreateQuiz{
     width: 20%;
     height: 30vh;
 }
@@ -99,8 +139,13 @@
     height: 31vh;
 }
 
+#profileStud:hover{
+    width: 41%;
+    height: 31vh;
+}
+
 #add:hover{
-    width: 21%;
+    width: 41%;
     height: 31vh;
 }
 
@@ -109,7 +154,12 @@
     height: 31vh;
 }
 
-#settings:hover{
+#CreateQuiz:hover{
+    width: 21%;
+    height: 31vh;
+}
+
+#AddAssignment:hover{
     width: 21%;
     height: 31vh;
 }

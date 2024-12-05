@@ -4,15 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import TeacherHeader from './TeacherHeader'
 import { StudentHeader } from './StudentHeader'
 
-const MainHeader = ({user, LogOut}) => {
+const MainHeader = ({cookie, LogOut}) => {
   const navigate = useNavigate()
 
-  if (user){
-    if (user.role === "teacher"){
-        return <TeacherHeader LogOut={LogOut}/>
+  if (cookie){
+    if (cookie.role === "teacher"){
+        return <TeacherHeader cookie={cookie} LogOut={LogOut}/>
     }
-    else if (user.role === "student"){
-        return <StudentHeader LogOut={LogOut}/>
+    else if (cookie.role === "student"){
+        return <StudentHeader cookie={cookie} LogOut={LogOut}/>
     }
   }
   else{
