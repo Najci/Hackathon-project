@@ -14,7 +14,7 @@ export const StudentHeader = ({cookie, LogOut}) => {
         </nav>
 
         <div id='Logout'>
-          <button onClick={() => {LogOut(), navigate('/login')}}>Log out</button>
+          <button onClick={() => {LogOut(), navigate('/')}}>Log out</button>
         </div>
 
     </header>

@@ -22,20 +22,20 @@ import Profile from './components/Profile';
 
 const ProtectedRoute = ({ element, user, username}) => {
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   if (username){
     const requiredRole = element.props.username;
     const hasAccess = user.username === requiredRole;
 
-    return hasAccess ? element : <Navigate to="/login" />;
+    return hasAccess ? element : <Navigate to="/" />;
   }
 
   if(element.props.id){
     const hasAccess = user.role === element.props.id;
   
-    return hasAccess ? element : <Navigate to="/login" />;
+    return hasAccess ? element : <Navigate to="/" />;
   }
 };
 
@@ -73,7 +73,7 @@ function App() {
       }>
         <Route path='/aboutus' element={<AboutUs />} />
         <Route path="/signup" element={<SignUp CreateCookie={handleLogin} user={cookie.user} />} />
-        <Route path="/login" element={<Login CreateCookie={handleLogin} user={cookie.user} />} />
+        <Route path="/" element={<Login CreateCookie={handleLogin} user={cookie.user} />} />
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
         <Route path='/teacher/createquiz' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
         <Route path={`/dashboard`} element={<MiddleDashboard cookie={cookie.user} />} user={cookie.user} />

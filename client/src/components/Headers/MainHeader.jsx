@@ -21,7 +21,7 @@ const MainHeader = ({cookie, LogOut}) => {
         <h1><b>EduSphinx</b></h1>
     
             <nav>
-                <Link to='/login'  style={{textDecoration: 'none'}}><div className='nav-Link'>Login</div></Link>
+                <Link to='/'  style={{textDecoration: 'none'}}><div className='nav-Link'>Login</div></Link>
                 <Link to='/signup'  style={{textDecoration: 'none'}}><div className='nav-Link'>Sign up</div></Link>
                 <Link to='/aboutus' style={{textDecoration: 'none'}}><div className='nav-Link'>About us</div></Link>
             </nav>
