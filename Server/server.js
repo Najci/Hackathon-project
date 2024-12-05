@@ -295,7 +295,7 @@ app.get('/teacher/dashboard/:username', async (req, res) => {
                     score: student.score
                 };
             });
-
+            console.log(newStudents);
             return { quizName, students: newStudents };
         });
 

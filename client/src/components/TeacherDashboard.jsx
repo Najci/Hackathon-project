@@ -53,7 +53,7 @@ const TeacherDashboard = ({cookie}) => {
                 <th>Score</th>
               </thead>
               <tbody>
-                {data[selectView].students.map((value, index) => {
+                {data[selectView]?.students?.map((value, index) => {
                   return <ShowScore key={index} data={value} />
                 })}
               </tbody>
