@@ -61,7 +61,7 @@ const TeacherDashboard = ({user}) => {
           <div className='box' id="settings">
             <Link to='/teacher/addassignment' style={{textDecoration: 'none'}}>
               <img src={assignicon} id="wheel"/>
-              <p>Add Assignments</p>
+              <p>Create Quiz</p>
             </Link>
           </div>
 

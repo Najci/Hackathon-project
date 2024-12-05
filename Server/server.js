@@ -25,10 +25,13 @@ const Question = require('./models/question-model')
 const Answer = require('./models/answer-model')
 const Assignment = require('./models/assignment-model');
 const { trusted } = require('mongoose');
+const bodyParser = require('body-parser');
 
 connectDB();
 
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors({
     origin: "http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -195,13 +198,7 @@ app.get('/teacher/dashboard', async (req,res)=>{
 
 })
 
-app.post('/teacher/createquiz/ai', async(req,res)=>{
-    topic = req.body.data.topic;
-    const prompt = "You are a question and answer generator for teachers creating an online quiz. Send in JSON format 5 questions, each with 4 possible answers, one of which is correct. Omit the ```json bits. The topic of the quiz is "+topic;
-    const result = await model.generateContent(prompt);
-    
-    console.log(result.response.text());
-})
+
 
 app.post('/teacher/search', async (req, res)=>{ 
 // stavi da ne mogu dva ista studenta / teachera
@@ -254,16 +251,55 @@ app.post('/teacher/addstudent', async (req, res)=>{
         res.json(student);
     })
 
-function parseQuizData(data){
-
+function parseQuizData(inputData){
+    const result = {
+        name: inputData.name,
+        subject: inputData.subject,
+        questions: []
+      };
+      
+      // Get all question keys dynamically
+      const questionKeys = Object.keys(inputData).filter(key => key.startsWith('question['));
+      
+      // Loop through each question
+      const questionIndexSet = new Set(); // To track unique question indices
+      questionKeys.forEach(key => {
+        const questionIndex = key.match(/\d+/)[0]; // Extract the question index (e.g., 0, 1)
+        
+        // If this question has already been processed, skip it
+        if (!questionIndexSet.has(questionIndex)) {
+          questionIndexSet.add(questionIndex);
+          
+          const question = {
+            questionText: inputData[`question[${questionIndex}][questionText]`],
+            answers: []
+          };
+      
+          // Loop through the answers for this question (assuming 4 answers per question)
+          for (let j = 0; j < 4; j++) {
+            const answer = {
+              answerText: inputData[`question[${questionIndex}][answers][${j}][answerText]`],
+              isCorrect: inputData[`question[${questionIndex}][answers][${j}][isCorrect]`] === 'on' // 'on' means correct
+            };
+            question.answers.push(answer);
+          }
+      
+          result.questions.push(question);
+        }
+        
+      });
+    console.log(result);
+    return result;
 }
 
 app.post('/teacher/createquiz', async(req,res)=>{
     // postuje se select sa jednim od 10 mogucih predmeta
     // postuje se list of questions, svaki question ima svoj tekst i list of 4 answers, svaki answer u sebi ima answerText i isCorrect boolean.
-    data = req.body.data;
-    
-    subject = data.subject;
+    inputData = req.body.data
+    result = parseQuizData(inputData);
+    console.log(result);
+    subject = result.subject;
+    console.log(subject)
     const schema = Joi.object({
         subject: Joi.string().valid('Mathematics', 'English', 'Biology', 'Physics', 'Chemistry', 'Computing', 'History', 'Geography', 'Health', 'Other')
     })
@@ -271,7 +307,7 @@ app.post('/teacher/createquiz', async(req,res)=>{
     if (error){
         res.status(400).send("Invalid subject");
     }
-    questions = data.questions;
+    questions = result.questions;
     let listOfQuestions = [];
     for (let question of questions){
         let listOfAnswers = []
@@ -286,45 +322,34 @@ app.post('/teacher/createquiz', async(req,res)=>{
         listOfQuestions.push(savedQuestion.id);
     }
     teacherUsername = req.body.cookie.user.username
-    data.questions = listOfQuestions;
-    let quiz = new Quiz(data);
-    quiz = await quiz.save();
+    console.log(result);
+    result.questions = listOfQuestions;
+    let _quiz = new Quiz(result);
+    _quiz = await _quiz.save();
     await User.updateOne(
         { username: teacherUsername },
-        { $push: { quizzes: quiz } } 
+        { $push: { quizzes: _quiz } } 
     );
 })
-
-app.get('/teacher/assign', async (req, res)=>{
-    // pokazuje sve quizzes i students jednog teachera
-    teacherUsername = req.body.cookie.user.username
-    teacher = await User.findOne({username: teacherUsername})
-    quizzes = teacher.quizzes;
-    students = teacher.students;
+app.post('/teacher/createquiz/ai', async(req,res)=>{
+    topic = req.body.data.topic;
+    console.log(topic)
+    const prompt = "You are a question and answer generator for teachers creating an online quiz. Send in JSON format 5-10 questions, each with EXCLUSIVELY 4 possible answers, one of which is correct. Omit the ```json bits. The keys should be called questionText, answerText, and isCorrect. The topic of the quiz is "+topic;
+    const result = await model.generateContent(prompt);
     
+    console.log(result.response.text());
+    res.json(result.response.text());
+})
+app.get('/teacher/assign/:username', async (req, res)=>{
+    // pokazuje sve quizzes i students jednog teachera
+    teacherUsername = req.params.username
+    teacher = await User.findOne({username: teacherUsername})
+    quizId = teacher.quizzes;
+    studentId = teacher.students;
+    quizzes = (await Quiz.find({_id: quizId})) 
+    students = (await User.find({_id: studentId})) 
     res.json({quizzes: quizzes, students:students})
 })
-
-
-app.get('/teacher/viewstudents/:username', async(req,res)=>{
-    console.log("VIEW");
-    teacherUsername = req.params.username;
-    teacher = (await User.find({username: teacherUsername}))[0]
-    studentID = teacher.students;
-    students = (await User.find({_id: studentID})) 
-    res.status(200);
-    res.json(students);
-})
-
-app.post('/teacher/removestudent/', async(req,res)=>{
-    teacherUsername = req.body.cookie.user.username;
-    studentId = req.body.data;
-    await User.updateOne({username: teacherUsername}, {$pull: {students: studentId}})
-    console.log(teacherUsername);
-    res.send("Deleted student.");
-})
-
-
 app.post('/teacher/assign', async (req, res)=>{
 
     // postuje se select quiza, checkbox studenata, duedate
@@ -340,6 +365,27 @@ app.post('/teacher/assign', async (req, res)=>{
     assignment = await assignment.save();
     res.send(assignment);
 })
+
+app.get('/teacher/viewstudents/:username', async(req,res)=>{
+    console.log("VIEW");
+    teacherUsername = req.params.username;
+    teacher = (await User.find({username: teacherUsername}))[0]
+    studentId = teacher.students;
+    students = (await User.find({_id: studentId})) 
+    res.status(200);
+    res.json(students);
+})
+
+app.post('/teacher/removestudent/', async(req,res)=>{
+    teacherUsername = req.body.cookie.user.username;
+    studentId = req.body.data;
+    await User.updateOne({username: teacherUsername}, {$pull: {students: studentId}})
+    console.log(teacherUsername);
+    res.send("Deleted student.");
+})
+
+
+
 
 app.get('/student/assignments/', async (req, res)=>{
     // trebalo bi da radi, proveri kad max napravi frontend
