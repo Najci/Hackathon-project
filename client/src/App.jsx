@@ -18,8 +18,9 @@ import AddAssignment from './components/AddAssignment';
 import MiddleDashboard from './components/MiddleDashboard';
 import StudentQuiz from './components/StudentQuiz';
 import PastAssignment from './components/PastAssignment';
+import Profile from './components/Profile';
 
-const ProtectedRoute = ({ element, user, username }) => {
+const ProtectedRoute = ({ element, user, username}) => {
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -31,10 +32,11 @@ const ProtectedRoute = ({ element, user, username }) => {
     return hasAccess ? element : <Navigate to="/login" />;
   }
 
-  const requiredRole = element.props.id;
-  const hasAccess = user.role === requiredRole;
-
-  return hasAccess ? element : <Navigate to="/login" />;
+  if(element.props.id){
+    const hasAccess = user.role === element.props.id;
+  
+    return hasAccess ? element : <Navigate to="/login" />;
+  }
 };
 
 
@@ -75,6 +77,8 @@ function App() {
         <Route path="/teacher/addstudent" element={<ProtectedRoute element={<AddStudent cookie={cookie}  id='teacher'/>} user={cookie.user} />} />
         <Route path='/teacher/createquiz' element={<ProtectedRoute element={<CreateQuiz cookie={cookie} id='teacher' />} user={cookie.user}/>} />
         <Route path={`/dashboard`} element={<MiddleDashboard cookie={cookie.user} />} user={cookie.user} />
+        <Route path={`student/profile/${cookie.user?.username}`} element={<ProtectedRoute element={<Profile cookie={cookie.user} id='student' username={cookie.user?.username} />} user={cookie.user} />} />
+        <Route path={`teacher/profile/${cookie.user?.username}`} element={<ProtectedRoute element={<Profile cookie={cookie.user} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path={`/teacher/viewstudents/${cookie.user?.username}`} element={<ProtectedRoute element={<ViewStudents cookie={cookie} id="teacher" username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path={`/teacher/assign/${cookie.user?.username}`} element={<ProtectedRoute element={<AddAssignment cookie={cookie} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />
         <Route path={`/teacher/dashboard/${cookie.user?.username}`} element={<ProtectedRoute element={<TeacherDashboard cookie={cookie.user} id='teacher' username={cookie.user?.username} />} user={cookie.user} />} />

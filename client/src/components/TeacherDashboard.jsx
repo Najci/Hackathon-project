@@ -63,8 +63,10 @@ const TeacherDashboard = ({cookie}) => {
 
         <div id='Sub'>
           <div className='box' id="profile" >
-            <img src={proficon} id="proficon"/>
-            <p>Profile</p>
+            <Link to={`teacher/profile/${cookie.username}`} style={{textDecoration: 'none'}}>
+              <img src={proficon} id="proficon"/>
+              <p>Profile</p>
+            </Link>
           </div>
 
           <div className='box' id="add" >

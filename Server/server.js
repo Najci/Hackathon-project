@@ -9,6 +9,7 @@ const saltRounds = 1;
 const session = require('express-session')
 const qs = require('qs');
 const mongoose = require('mongoose');
+const parseQuizData = require('./parseQuizData');
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI("AIzaSyCcnoqG6EFuJfRyBOGzxlGKM1lM8AfWe5A");
@@ -52,37 +53,10 @@ function createSession(data){
     return {username: data.username, firstname: data.firstname, lastname: data.lastname, role: data.role, email: data.email}
 }
 
-/* const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        return next(); // User is authenticated, proceed to the next middleware
-    }
-    else
-    {
-        res.status(403).send('Unauthorized');
-    }
-    
-}; */
-
-/* const isTeacher = (req, res, next) => {
-    
-    console.log(req.session.user.role);
-    
-}; */
-
-/* const isStudent = (req, res, next) => {
-    if (req.session.user && req.session.user.role === "student") {
-        return next();
-    }
-    else
-    {
-    res.status(403).send('Unauthorized');
-    }
-}; */
 
 app.post('/signup', async (req, res) => {
     try {
         let data = req.body;
-        // TO-DO: Add messages for errors
         const schema = Joi.object({
             firstname: Joi.string()
                     .alphanum()
@@ -129,7 +103,6 @@ app.post('/signup', async (req, res) => {
         }
         let user = new User(signUpData);
         user = await user.save();
-        // Session starts
         
         res.status(201);
         res.json(req.session.user);
@@ -177,7 +150,6 @@ app.post('/login', async (req, res) => {
                     if (err) {
                         res.status(500).send("Error saving session");
                     } else {
-                        console.log("AJDE")
                         res.status(201);
                         res.json(req.session); 
                     }
@@ -191,10 +163,36 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.get('/profile/:username', async(req,res)=>{
+app.get('/student/profile/:username', async(req,res)=>{
     username = req.params.username;
-    fullUser = await User.find({username:username});
-    console.log(fullUser);
+    fullUser = await User.findOne({username:username});
+    data = {
+        firstname:fullUser.firstname,
+        lastname:fullUser.lastname,
+        username:fullUser.username,
+        email:fullUser.email,
+        role:fullUser.role,
+        dateOfCreation:fullUser.dateOfCreation
+    }
+
+
+    res.status(200).json(data);
+})
+app.get('/teacher/profile/:username', async(req,res)=>{
+    username = req.params.username;
+    fullUser = await User.findOne({username:username});
+    
+    data = {
+        firstname:fullUser.firstname,
+        lastname:fullUser.lastname,
+        username:fullUser.username,
+        email:fullUser.email,
+        role:fullUser.role,
+        dateOfCreation:fullUser.dateOfCreation
+    }
+
+
+    res.status(200).json(data);
 })
 
 app.get('/student/dashboard/:username', async (req,res)=>{
@@ -214,14 +212,12 @@ app.get('/student/dashboard/:username', async (req,res)=>{
         let teacher = (await User.find({quizzes: { $in:  [quiz]}}))[0]
         const newAssignment = await Assignment.findOne(
             {
-                "students.studentId": studentId // Match the studentId
+                "students.studentId": studentId 
             },
             {
-                "students.$": 1 // Only include the matched student in the result
+                "students.$": 1 
             }
-        );
-        console.log(newAssignment.students[0].score);
-        if (!newAssignment.students[0].score){
+        );        if (!newAssignment.students[0].score){
         studentAssignment = {
             ...assignment.toObject(),
             teacherFirstName: teacher.firstname,
@@ -256,7 +252,6 @@ app.get('/student/pastassignments/:username', async (req, res) =>{
     let fullAssignments = []
     for (let assignment of assignments){
         const student = assignment.students.find(student => student.studentId.toString() === studentId.toString());
-        console.log(assignment.quiz);
         fullQuiz = await Quiz.findOne({_id:assignment.quiz});
         newQuiz = `${fullQuiz.name} / ${fullQuiz.subject}`
         fullAssignment = {quizName:newQuiz, dueDate:assignment.dueDate, score:student.score}
@@ -272,35 +267,27 @@ app.get('/student/pastassignments/:username', async (req, res) =>{
 
 app.get('/teacher/dashboard/:username', async (req, res) => {
     const teacherUsername = req.params.username;
-
     try {
-        // Step 1: Find the teacher and get their quizzes
         const teacher = await User.findOne({ username: teacherUsername }, { quizzes: 1 }).populate({
             path: 'quizzes',
-            model: 'Quiz', // assuming you have a Quiz model reference in the quizzes field
-            select: 'name subject' // select only necessary fields to avoid over-fetching
+            model: 'Quiz',
+            select: 'name subject'
         });
-
         if (!teacher) {
             return res.status(404).send('Teacher not found');
         }
-
-        // Step 2: Get all assignments for the quizzes in bulk
         const assignments = await Assignment.find({ quiz: { $in: teacher.quizzes.map(q => q._id) } }).populate({
             path: 'quiz',
             model: 'Quiz',
-            select: 'name subject' // only necessary fields from Quiz model
+            select: 'name subject'
         }).populate({
-            path: 'students.studentId', // Assuming studentId is a reference to the User model
+            path: 'students.studentId',
             model: 'User',
-            select: 'firstname lastname username' // Only necessary fields from User model
+            select: 'firstname lastname username'
         });
-
-        // Step 3: Process the data
         const things = assignments.map(assignment => {
             const quizName = `${assignment.quiz.name} / ${assignment.quiz.subject}`;
 
-            // Map over students and structure their data
             const newStudents = assignment.students.map(student => {
                 return {
                     name: `${student.studentId.firstname} ${student.studentId.lastname}`,
@@ -312,9 +299,7 @@ app.get('/teacher/dashboard/:username', async (req, res) => {
             return { quizName, students: newStudents };
         });
 
-        // Step 4: Send the response
         res.status(200).json(things);
-
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');
@@ -324,9 +309,6 @@ app.get('/teacher/dashboard/:username', async (req, res) => {
 
 
 app.post('/teacher/search', async (req, res)=>{ 
-// stavi da ne mogu dva ista studenta / teachera
-    
-
     if (!req.body.cookie){
         return res.send("not authorised")
     }
@@ -353,7 +335,6 @@ app.post('/teacher/search', async (req, res)=>{
   })
 
 app.post('/teacher/addstudent', async (req, res)=>{ 
-    // stavi da ne mogu dva ista studenta / teachera
        teacherUsername = req.body.cookie.user.username;
        studentId = req.body.data;
         try{
@@ -374,49 +355,9 @@ app.post('/teacher/addstudent', async (req, res)=>{
         res.status(200)
     })
 
-function parseQuizData(inputData){
-    const result = {
-        name: inputData.name,
-        subject: inputData.subject,
-        questions: []
-      };
-      
-      // Get all question keys dynamically
-      const questionKeys = Object.keys(inputData).filter(key => key.startsWith('question['));
-      
-      // Loop through each question
-      const questionIndexSet = new Set(); // To track unique question indices
-      questionKeys.forEach(key => {
-        const questionIndex = key.match(/\d+/)[0]; // Extract the question index (e.g., 0, 1)
-        
-        // If this question has already been processed, skip it
-        if (!questionIndexSet.has(questionIndex)) {
-          questionIndexSet.add(questionIndex);
-          
-          const question = {
-            questionText: inputData[`question[${questionIndex}][questionText]`],
-            answers: []
-          };
-      
-          // Loop through the answers for this question (assuming 4 answers per question)
-          for (let j = 0; j < 4; j++) {
-            const answer = {
-              answerText: inputData[`question[${questionIndex}][answers][${j}][answerText]`],
-              isCorrect: inputData[`question[${questionIndex}][answers][${j}][isCorrect]`] === 'on' // 'on' means correct
-            };
-            question.answers.push(answer);
-          }
-      
-          result.questions.push(question);
-        }
-        
-      });
-    return result;
-}
+
 
 app.post('/teacher/createquiz', async(req,res)=>{
-    // postuje se select sa jednim od 10 mogucih predmeta
-    // postuje se list of questions, svaki question ima svoj tekst i list of 4 answers, svaki answer u sebi ima answerText i isCorrect boolean.
     try{
     inputData = req.body.data
     result = parseQuizData(inputData);
@@ -455,7 +396,6 @@ app.post('/teacher/createquiz', async(req,res)=>{
     }
     catch(error){
         res.status(400)
-        console.log(error.message)
         return res.send("Error creating quiz, please make sure all fields are filled.");
     }
     res.status(200)
@@ -464,31 +404,25 @@ app.post('/teacher/createquiz', async(req,res)=>{
 app.get('/student/:username/assignment/:assignmentid', async (req, res) => {
     const assignmentId = req.params.assignmentid;
   
-    // Fetch the assignment and quiz in parallel
     const assignment = await Assignment.findOne({ _id: assignmentId });
     const quiz = await Quiz.findOne({ _id: assignment.quiz });
   
-    // Fetch all questions in one query
     const questionIds = quiz.questions;
     const questionsData = await Question.find({ _id: { $in: questionIds } });
   
-    // Collect all answer IDs and fetch them in one query
     const answerIds = questionsData.flatMap(question => question.answers);
     const answersData = await Answer.find({ _id: { $in: answerIds } });
   
-    // Map answers to their respective questions
     const answersMap = new Map();
     answersData.forEach(answer => {
       answersMap.set(answer._id.toString(), answer);
     });
   
-    // Build the questions array
     const questions = questionsData.map(question => ({
       questionText: question.questionText,
       answers: question.answers.map(answerId => answersMap.get(answerId.toString()))
     }));
   
-    // Construct the final quiz object
     const newQuiz = {
       name: quiz.name,
       subject: quiz.subject,
@@ -514,18 +448,14 @@ app.post('/student/:username/assignment/:assignmentid', async (req, res) => {
     }
     const assignmentId = req.params.assignmentid;
     const assignment = await Assignment.findOne({ _id: assignmentId });
-    console.log(assignmentId);
     const quiz = await Quiz.findOne({ _id: assignment.quiz });
     n = quiz.questions.length;
     stringScore = `${score}/${n}`
     studentUsername = req.params.username;
     studentId = (await User.findOne({username: studentUsername})).id;
-    console.log("studentid", studentId);
-    console.log("assignmentId", assignmentId);
     newAssignment = await Assignment.findOneAndUpdate({_id: assignmentId, "students.studentId": { $in: studentId }}, 
                                       { $set: { "students.$.score": stringScore} },
                                     {new: true})
-    console.log(newAssignment);
     res.status(200)
     
 });
@@ -553,7 +483,6 @@ app.post('/teacher/assign', async (req, res)=>{
 
     teacherUsername = req.body.cookie.user.username
     teacher = (await User.find({username: teacherUsername}))[0]
-    // TODO: error-checking
     quizzes = teacher.quizzes;
     if (!quizzes){
         
@@ -590,7 +519,6 @@ app.post('/teacher/assign', async (req, res)=>{
 })
 
 app.get('/teacher/viewstudents/:username', async(req,res)=>{
-    console.log("VIEW");
     teacherUsername = req.params.username;
     teacher = (await User.find({username: teacherUsername}))[0]
     studentId = teacher.students;
@@ -605,33 +533,6 @@ app.post('/teacher/removestudent/', async(req,res)=>{
     await User.updateOne({username: teacherUsername}, {$pull: {students: studentId}})
     res.send("Deleted student.");
     res.status(200)
-})
-
-
-
-
-app.get('/student/assignments/', async (req, res)=>{
-    // trebalo bi da radi, proveri kad max napravi frontend
-    // ako ne radi srecno
-    
-    studentUsername = req.body.cookie.user.username;
-    studentId = (await User.find({username: studentUsername}))[0].id
-    assignments = await Assignment.find({students: { $in:  [studentId]}})
-    for (let assignment of assignments){
-        let quiz = (await Quiz.find({id: assignment.quiz}))[0].id
-        let teacher = (await User.find({quizzes: { $in:  [quiz]}}))[0]
-        assignment.teacherFirstName = teacher.firstname;
-        assignment.teacherLastName = teacher.lastname;
-    }
-    res.json(assignments);
-    res.status(200)
-})
-
-
-  // NEMOJ ZABORAVIS DA OBRISES
-app.get('/deletedb', async (req, res)=>{
-    await User.deleteMany({});
-    res.send('suc')
 })
 
 const port = process.env.PORT || 3000;

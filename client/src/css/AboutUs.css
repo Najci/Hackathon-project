@@ -1,0 +1,83 @@
+#MainAboutUS{
+    margin: 0 auto;
+    margin-top: 5%;
+    width: 70%;
+    padding: 5px;
+}
+
+#Us{
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    gap: 10%;
+}
+
+#Max{
+    width: 30vh;
+    height: 30vh;
+    background-color: black;
+    border-radius: 50%;
+    background-image: url(../assets/Max.jpg);
+    background-position: center;
+    background-size: cover;
+    border: 3px solid rgb(66, 73, 177);
+}
+
+#Janko{
+    width: 30vh;
+    height: 30vh;
+    background-color: black;
+    border-radius: 50%;
+    background-image: url(../assets/Janko.jpg);
+    background-position: center;
+    background-size: cover;
+    border: 3px solid rgb(66, 73, 177);
+}
+
+#Stevan{
+    width: 30vh;
+    height: 30vh;
+    background-color: black;
+    border-radius: 50%;
+    background-image: url(../assets/Stevan.jpg);
+    background-position: center;
+    background-size: cover;
+    border: 3px solid rgb(66, 73, 177);
+}
+
+#Me{
+    margin-top: 10%;
+    padding: 2%;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    height: 10vh;
+    width: 100%;
+    text-align: center;
+    font-size: x-large;
+    color: white;
+}
+
+#desc{
+    margin-top: 2%;
+    padding: 2%;
+    border: 1px solid rgb(66, 73, 177);
+    background-color: rgba(0, 0, 0, 0.514);
+    box-shadow: 0px 0px 40px black;
+    border-radius: 20px;
+    height: 15vh;
+    width: 100%;
+    text-align: center;
+
+}
+
+#desc p{
+    color: white;
+}
+
+.role{
+    font-size: smaller;
+    color: white;
+}

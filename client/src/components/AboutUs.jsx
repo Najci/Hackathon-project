@@ -1,10 +1,40 @@
 import React from 'react'
+import '../css/AboutUs.css'
 
 const AboutUs = () => {
   return (
-    <div>We are a newly founded team in Serbia, Jagodina,we represent that even a group of friends in highschool can achive big things and we hope to do just that in this competicion.
-    Our goul started when we begin competing in the first year althou we didnt achive mush taht lit the fire in our hearts for programming.We are trying to be evenly spread out 
-    to both backend and frontend so when one of us runs into a problem we can all come to help,we stride to create app that will help everybody as with this web site to help students learn in a more relaxed enviroment.</div>
+    <div id='MainAboutUS'>
+        <div id='Us'>
+          <div>
+            <div id='Max'></div>
+            <div id='Me'>
+              <p>Max Aramis Hidanović</p>
+              <p className='role'>Frontend Engineer</p>
+            </div>
+          </div>
+
+          <div>
+            <div id='Janko'></div>
+            <div id='Me'>
+              <p>Janko Nikolić</p>
+              <p className='role'>Project Manager</p>
+            </div>
+          </div>
+
+          <div>
+            <div id='Stevan'></div>
+            <div id='Me'>
+              <p>Stevan Stanković</p>
+              <p className='role'>Backend Engineer</p>
+            </div>
+          </div>
+         
+        </div>
+
+        <div id='desc'>
+          <p>We are a newly founded team in Jagodina, Serbia. We represent that even a group of friends in high school can achieve great things and we hope to do just that in this competition. We feel like programming is an essential part of our lives, and the beauty of it is what makes us love it so much. Teamwork is extremely important to us, owing to the fact that everything is easier as a team. Our primary goal is to create beneficial applications that help people in their everyday lives.</p>
+        </div>
+    </div>
   )
 }
 

@@ -60,15 +60,17 @@ const StudentDashboard = ({cookie}) => {
 
         <div id='Sub'>
           <div className='box' id="quizStud" >
-          <Link to={`/student/pastassignments/${cookie.username}`}>
+          <Link to={`/student/pastassignments/${cookie.username}`} style={{textDecoration: 'none'}}>
             <img src={quizicon} id="quizicon"/>
-            <p>Quiz</p>
+            <p>Past Assignments</p>
           </Link>
         </div>
 
           <div className='box' id="profileStud" >
-            <img src={proficon} id="proficon"/>
-            <p>Profile</p>
+            <Link to={`/student/profile/${cookie.username}`} style={{textDecoration: 'none'}}>
+              <img src={proficon} id="proficon"/>
+              <p>Profile</p>
+            </Link>	
           </div>
 
         </div>
