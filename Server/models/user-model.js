@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
+    dateOfCreation:{type: mongoose.Schema.Types.Date}
 }
 )
 const User = mongoose.model('User', userSchema);
