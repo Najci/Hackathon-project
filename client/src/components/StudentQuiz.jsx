@@ -35,6 +35,7 @@ const StudentQuiz = ({cookie, assignmentId}) => {
         .then(function(response) {
             navigate(`/student/dashboard/${cookie.user.username}`)
             console.log(response.data);
+            navigate(`/student/dashboard/${cookie.username}`)
         });
     };
 
