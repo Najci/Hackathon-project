@@ -38,7 +38,7 @@ const TeacherDashboard = ({cookie}) => {
       <div id="mainDash">
 
         <div id='ScoreSec'>
-          <select name="" defaultValue="Def" id="OptionScoreSec" onSelect={(e) => {setSelectView(e.target.value)}}>
+          <select name="" defaultValue="Def" id="OptionScoreSec" onChange={(e) => {setSelectView(e.target.value)}}>
             <option value="Def" disabled>Select an assignment</option>
             {data.map((value, index)=> {
                 return <OptionAssignDashTeach key={index} index={index} data={value.quizName} />
@@ -48,9 +48,11 @@ const TeacherDashboard = ({cookie}) => {
           <div id="scoreboard">
             <table>
               <thead>
-                <th>Student's name</th>
-                <th>Username</th>
-                <th>Score</th>
+                <tr>
+                  <th>Student's name</th>
+                  <th>Username</th>
+                  <th>Score</th>
+                </tr>
               </thead>
               <tbody>
                 {data[selectView]?.students?.map((value, index) => {
