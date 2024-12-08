@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({
-    origin: "https://hackathon-project-sbuj.onrender.com",
+    origin: "http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }));
