@@ -22,7 +22,7 @@ const Login = ({ CreateCookie, user }) => {
     const form = new FormData(e.target); 
     const formData = Object.fromEntries(form.entries())
 
-     axios.post('https://hackathon-project-sbuj.onrender.com/api/login', formData)
+     axios.post('https://hackathon-project-sbuj.onrender.com/login', formData)
     .then(function (response) {
       CreateCookie(response.data.user)
       navigate('/dashboard')
