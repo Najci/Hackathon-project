@@ -33,7 +33,6 @@ const StudentQuiz = ({cookie, assignmentId}) => {
     
         axios.post(`http://localhost:3000/student/${cookie.username}/assignment/${assignmentId}`, { data: formData, cookie })
         .then(function(response) {
-            navigate(`/student/dashboard/${cookie.user.username}`)
             console.log(response.data);
             navigate(`/student/dashboard/${cookie.username}`)
         });

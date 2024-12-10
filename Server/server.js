@@ -206,20 +206,14 @@ app.get('/student/dashboard/:username', async (req,res)=>{
           }
         }
       });
+
     let studentAssignments = []
     for (let assignment of assignments){
         let quiz = await Quiz.findOne({_id: assignment.quiz})
-        let teacher = (await User.find({quizzes: { $in:  [quiz]}}))[0]
-        const newAssignment = await Assignment.findOne(
-            {
-                "students.studentId": studentId 
-            },
-            {
-                "students.$": 1 
-            }
-        );
-        console.log(newAssignment.students[0].score)        
-        if (!newAssignment.students[0].score){
+        
+        let teacher = await User.findOne({quizzes: { $in:  [quiz]}})
+        const result = assignment.students.find(entry => entry.studentId.equals(studentId));
+        if (!result.score){
         studentAssignment = {
             ...assignment.toObject(),
             teacherFirstName: teacher.firstname,
@@ -233,7 +227,7 @@ app.get('/student/dashboard/:username', async (req,res)=>{
         if (today < due ){
             studentAssignments.push(studentAssignment);
         }
-    }
+    } 
     }
     res.json(studentAssignments);
     res.status(200)
@@ -297,7 +291,6 @@ app.get('/teacher/dashboard/:username', async (req, res) => {
                     score: student.score
                 };
             });
-            console.log(newStudents);
             return { quizName, students: newStudents };
         });
 
@@ -514,10 +507,16 @@ app.post('/teacher/assign', async (req, res)=>{
         return res.status(400).send("No students added")
     }
 
+    try{
     let assignment = new Assignment(assignmentData);
     assignment = await assignment.save();
     res.send(assignment);
     res.status(200)
+    }
+    catch(error){
+        console.log(error.message);
+    }
+    
 })
 
 app.get('/teacher/viewstudents/:username', async(req,res)=>{
