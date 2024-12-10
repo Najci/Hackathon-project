@@ -217,7 +217,9 @@ app.get('/student/dashboard/:username', async (req,res)=>{
             {
                 "students.$": 1 
             }
-        );        if (!newAssignment.students[0].score){
+        );
+        console.log(newAssignment.students[0].score)        
+        if (!newAssignment.students[0].score){
         studentAssignment = {
             ...assignment.toObject(),
             teacherFirstName: teacher.firstname,
@@ -228,7 +230,7 @@ app.get('/student/dashboard/:username', async (req,res)=>{
 
         let today = new Date();
         let due = new Date(studentAssignment.dueDate)
-        if (today < due){
+        if (today < due ){
             studentAssignments.push(studentAssignment);
         }
     }
@@ -457,7 +459,7 @@ app.post('/student/:username/assignment/:assignmentid', async (req, res) => {
                                       { $set: { "students.$.score": stringScore} },
                                     {new: true})
     res.status(200)
-    
+    res.send("Successful.")
 });
   
 app.post('/teacher/createquiz/ai', async(req,res)=>{
